@@ -14,5 +14,25 @@ module RedisCookbook
       end
     end
 
+    # Since other platforms like to name the files differently.
+    def sentinel_config 
+      case node.platform_family
+      when "debian"
+        "#{config_dir}/sentinel.conf"
+      else
+        "#{config_dir}/redis-sentinel.conf"
+      end
+    end
+    
+    # Method for start command if sentinel is being used.
+    def start_command
+      start = "/usr/bin/redis-server #{config_dir}/redis.conf"
+      case new_resource.sentinel
+      when true
+        "#{start} #{sentinel_config} --sentinel"
+      when false
+        "#{start}"
+      end
+    end
   end
 end

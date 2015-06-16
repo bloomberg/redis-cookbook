@@ -14,9 +14,7 @@
 
 # By default Redis does not run as a daemon. Use 'yes' if you need it.
 # Note that Redis will write a pid file in /var/run/redis.pid when daemonized.
-<% if @config.daemonize %>
-daemonize <%= @config.daemonize %>
-<% end %>
+daemonize yes
 
 # When running daemonized, Redis writes a pid file in /var/run/redis.pid by
 # default. You can specify a custom pid file location here.
@@ -27,7 +25,7 @@ pidfile <%= @config.pid_file %>
 # Accept connections on the specified port, default is 6379.
 # If port 0 is specified Redis will not listen on a TCP socket.
 <% if @config.port  %>
-port <%= @config.port %>
+port <%= @config.port.to_s %>
 <% end %>
 
 # If you want you can bind a single interface, if the bind option is not
@@ -94,7 +92,7 @@ syslog-facility <%= @config.syslog_facility %>
 # a different one on a per-connection basis using SELECT <dbid> where
 # dbid is a number between 0 and 'databases'-1
 <% if @config.databases %>
-databases <%= @config.databases %>
+databases <%= @config.databases.to_s %>
 <% end %>
 
 ################################ SNAPSHOTTING  #################################
@@ -270,7 +268,7 @@ repl-timeout <%= @config.repl_timeout %>
 #
 # By default the priority is 100.
 <% if @config.slave_priority %>
-slave-priority <%= @config.slave_priority %>
+slave-priority <%= @config.slave_priority.to_s %>
 <% end %>
 
 ################################## SECURITY ###################################
@@ -482,10 +480,10 @@ no-appendfsync-on-rewrite <%= @config.no_appendfsync_on_rewrite %>
 # Specify a percentage of zero in order to disable the automatic AOF
 # rewrite feature.
 <% if @config.auto_aof_rewrite_percentage %>
-auto-aof-rewrite-percentage <%= @config.auto_aof_rewrite_percentage %>
+auto-aof-rewrite-percentage <%= @config.auto_aof_rewrite_percentage.to_s %>
 <% end %>
 <% if @config.auto_aof_rewrite_min_size %>
-auto-aof-rewrite-min-size 64mb
+auto-aof-rewrite-min-size <%= @config.auto_aof_rewrite_min_size.to_s %>mb
 <% end %>
 
 ################################ LUA SCRIPTING  ###############################
@@ -505,7 +503,7 @@ auto-aof-rewrite-min-size 64mb
 #
 # Set it to 0 or a negative value for unlimited execution without warnings.
 <% if @config.lua_time_limit %>
-lua-time-limit <%= @config.lua_time_limit %>
+lua-time-limit <%= @config.lua_time_limit.to_s %>
 <% end %>
 
 ################################## SLOW LOG ###################################
@@ -527,13 +525,13 @@ lua-time-limit <%= @config.lua_time_limit %>
 # to one second. Note that a negative number disables the slow log, while
 # a value of zero forces the logging of every command.
 <% if @config.slowlog_log_slower_than %>
-slowlog-log-slower-than <%= @config.slowlog_log_slower_than %>
+slowlog-log-slower-than <%= @config.slowlog_log_slower_than.to_s %>
 <% end %>
 
 # There is no limit to this length. Just be aware that it will consume memory.
 # You can reclaim memory used by the slow log with SLOWLOG RESET.
 <% if @config.slowlog_max_len %>
-slowlog-max-len <%= @config.slowlog_max_len %>
+slowlog-max-len <%= @config.slowlog_max_len.to_s %>
 <% end %>
 
 ############################### ADVANCED CONFIG ###############################
@@ -542,20 +540,20 @@ slowlog-max-len <%= @config.slowlog_max_len %>
 # small number of entries, and the biggest entry does not exceed a given
 # threshold. These thresholds can be configured using the following directives.
 <% if @config.hash_max_ziplist_entries %>
-hash-max-ziplist-entries <%= @config.hash_max_ziplist_entries %>
+hash-max-ziplist-entries <%= @config.hash_max_ziplist_entries.to_s %>
 <% end %>
 <% if @config.hash_max_ziplist_value %>
-hash-max-ziplist-value <%= @config.hash_max_ziplist_value %>
+hash-max-ziplist-value <%= @config.hash_max_ziplist_value.to_s %>
 <% end %>
 
 # Similarly to hashes, small lists are also encoded in a special way in order
 # to save a lot of space. The special representation is only used when
 # you are under the following limits:
 <% if @config.list_max_ziplist_entries %>
-list-max-ziplist-entries <%= @config.list_max_ziplist_entries %>
+list-max-ziplist-entries <%= @config.list_max_ziplist_entries.to_s %>
 <% end %>
 <% if @config.list_max_ziplist_value %>
-list-max-ziplist-value <%= @config.list_max_ziplist_value %>
+list-max-ziplist-value <%= @config.list_max_ziplist_value.to_s %>
 <% end %>
 
 # Sets have a special encoding in just one case: when a set is composed
@@ -564,17 +562,17 @@ list-max-ziplist-value <%= @config.list_max_ziplist_value %>
 # The following configuration setting sets the limit in the size of the
 # set in order to use this special memory saving encoding.
 <% if @config.set_max_intset_entries %>
-set-max-intset-entries <%= @config.set_max_intset_entries %>
+set-max-intset-entries <%= @config.set_max_intset_entries.to_s %>
 <% end %>
 
 # Similarly to hashes and lists, sorted sets are also specially encoded in
 # order to save a lot of space. This encoding is only used when the length and
 # elements of a sorted set are below the following limits:
 <% if @config.zset_max_ziplist_entries %>
-zset-max-ziplist-entries <%= @config.zset_max_ziplist_entries %>
+zset-max-ziplist-entries <%= @config.zset_max_ziplist_entries.to_s %>
 <% end %>
 <% if @config.zet_max_ziplist_value %>
-zset-max-ziplist-value <%= @config.zet_max_ziplist_value %>
+zset-max-ziplist-value <%= @config.zet_max_ziplist_value.to_s %>
 <% end %>
 
 # Active rehashing uses 1 millisecond every 100 milliseconds of CPU time in
