@@ -1,12 +1,11 @@
 # Redis Server Cookbook
 [![License](https://img.shields.io/badge/license-Apache_2-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 
-[Application cookbook][0] which installs and configures the [redis-server][1] monitoring daemon.
+[Application cookbook][0] which installs and configures the [redis-server][1] monitoring daemon. Currently it defaults to ubuntu. 
 
 ## Usage
 ### Supports
-- Ubuntu
-- Centos
+- Ubuntu 
 
 Currently this does not support sentinal but it will in due time.
 
