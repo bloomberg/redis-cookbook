@@ -1,0 +1,13 @@
+---
+driver_plugin: vagrant
+provisioner:
+  name: chef_zero
+
+platforms:
+- name: opscode-ubuntu-14.04
+
+suites:
+- name: default
+  run_list:
+    - recipe[redis-instance-test::default]
+  attributes:
