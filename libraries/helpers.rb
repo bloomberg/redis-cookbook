@@ -26,12 +26,12 @@ module RedisCookbook
     
     # Method for start command if sentinel is being used.
     def start_command
-      start = "/usr/bin/redis-server #{config_dir}/redis.conf"
+      start = "/usr/bin/redis-server"
       case new_resource.sentinel
       when true
         "#{start} #{sentinel_config} --sentinel"
       when false
-        "#{start}"
+        "#{start} #{config_dir}/redis.conf"
       end
     end
   end

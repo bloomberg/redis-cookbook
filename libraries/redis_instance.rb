@@ -13,7 +13,7 @@ class Chef::Resource::RedisInstance < Chef::Resource
 
   # @!attribute config_name
   # @return [String]
-  attribute(:config_name, kind_of: String, default: 'redis', name_attribute: true, required: true)
+  attribute(:config_name, kind_of: String, name_attribute: true)
 
   # @!attribute pkg
   # @return [String]
@@ -94,8 +94,8 @@ class Chef::Resource::RedisInstance < Chef::Resource
   attribute(:sentinel_down, :kind_of => Integer, default: '30000')
   attribute(:sentinel_parallel, :kind_of => Integer, default: '1')
   attribute(:sentinel_failover, :kind_of => Integer, default: '180000')
-  attribute(:sentinel_notification, :kind_of => String, default: '/var/redis/notify.sh')
-  attribute(:sentinel_client_reconfig, :kind_of => String, default: '/var/redis/reconfig.sh')
+  attribute(:sentinel_notification, :kind_of => [String, NilClass], default: nil) # Dir.home('redis') + '/notify.sh'
+  attribute(:sentinel_client_reconfig, :kind_of => [String,NilClass], default: nil) # Dir.home('redis') + '/reconfig.sh'
 end
 
 class Chef::Provider::RedisInstance < Chef::Provider

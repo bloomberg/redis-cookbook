@@ -35,6 +35,13 @@ redis_instance "redis" do
 end
 ```
 
+You have the ability to enable sentinel with the below block.
+```ruby 
+redis_instance "redis" do 
+  sentinel true
+end
+```
+
 License & Authors
 -----------------
 - Author:: Anthony Caiafa (<2600.ac@gmail.com>)

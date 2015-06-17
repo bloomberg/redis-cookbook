@@ -2,11 +2,11 @@
 
 # port <sentinel-port>
 # The port that this sentinel instance will run on
-<% if @config.sentenil_port %>
-port <%= @config.sentenil_port %>
+<% if @config.sentinel_port %>
+port <%= @config.sentinel_port %>
 <% end %>
 
-# sentinel monitor <%= @config.sentenil_master_name %> <ip> <redis-port> <quorum>
+# sentinel monitor <%= @config.sentinel_master_name %> <ip> <redis-port> <quorum>
 #
 # Tells Sentinel to monitor this master, and to consider it in O_DOWN
 # (Objectively Down) state only if at least <quorum> sentinels agree.
@@ -18,10 +18,10 @@ port <%= @config.sentenil_port %>
 # Note: master name should not include special characters or spaces.
 # The valid charset is A-z 0-9 and the three characters ".-_".
 <% if @config.sentinel_monitor %>
-sentinel monitor <%= @config.sentenil_master_name %> <%= @config.sentinel_monitor %>
+sentinel monitor <%= @config.sentinel_master_name %> <%= @config.sentinel_monitor %>
 <% end %>
 
-# sentinel auth-pass <%= @config.sentenil_master_name %> <password>
+# sentinel auth-pass <%= @config.sentinel_master_name %> <password>
 #
 # Set the password to use to authenticate with the master and slaves.
 # Useful if there is a password set in the Redis instances to monitor.
@@ -39,10 +39,10 @@ sentinel monitor <%= @config.sentenil_master_name %> <%= @config.sentinel_monito
 # Example:
 #
 <% if @config.sentinel_auth %>
-sentinel auth-pass <%= @config.sentenil_master_name %> <%= @config.sentinel_auth %>
+sentinel auth-pass <%= @config.sentinel_master_name %> <%= @config.sentinel_auth %>
 <% end %>
 
-# sentinel down-after-milliseconds <%= @config.sentenil_master_name %> <milliseconds>
+# sentinel down-after-milliseconds <%= @config.sentinel_master_name %> <milliseconds>
 #
 # Number of milliseconds the master (or any attached slave or sentinel) should
 # be unreachable (as in, not acceptable reply to PING, continuously, for the
@@ -51,19 +51,19 @@ sentinel auth-pass <%= @config.sentenil_master_name %> <%= @config.sentinel_auth
 #
 # Default is 30 seconds.
 <% if @config.sentinel_down %>
-sentinel down-after-milliseconds <%= @config.sentenil_master_name %> <%= @config.sentinel_down %>
+sentinel down-after-milliseconds <%= @config.sentinel_master_name %> <%= @config.sentinel_down %>
 <% end %>
 
-# sentinel parallel-syncs <%= @config.sentenil_master_name %> <numslaves>
+# sentinel parallel-syncs <%= @config.sentinel_master_name %> <numslaves>
 #
 # How many slaves we can reconfigure to point to the new slave simultaneously
 # during the failover. Use a low number if you use the slaves to serve query
 # to avoid that all the slaves will be unreachable at about the same
 # time while performing the synchronization with the master.
 <% if @config.sentinel_parallel %>
-sentinel parallel-syncs <%= @config.sentenil_master_name %> <%= @config.sentinel_parallel %>
+sentinel parallel-syncs <%= @config.sentinel_master_name %> <%= @config.sentinel_parallel %>
 <% end %>
-# sentinel failover-timeout <%= @config.sentenil_master_name %> <milliseconds>
+# sentinel failover-timeout <%= @config.sentinel_master_name %> <milliseconds>
 #
 # Specifies the failover timeout in milliseconds. It is used in many ways:
 #
@@ -87,7 +87,7 @@ sentinel parallel-syncs <%= @config.sentenil_master_name %> <%= @config.sentinel
 #
 # Default is 3 minutes.
 <% if @config.sentinel_failover %>
-sentinel failover-timeout <%= @config.sentenil_master_name %> <%= @config.sentinel_failover %>
+sentinel failover-timeout <%= @config.sentinel_master_name %> <%= @config.sentinel_failover %>
 <% end %>
 
 # SCRIPTS EXECUTION
@@ -111,7 +111,7 @@ sentinel failover-timeout <%= @config.sentenil_master_name %> <%= @config.sentin
 
 # NOTIFICATION SCRIPT
 #
-# sentinel notification-script <%= @config.sentenil_master_name %> <script-path>
+# sentinel notification-script <%= @config.sentinel_master_name %> <script-path>
 #
 # Call the specified notification script for any sentinel event that is
 # generated in the WARNING level (for instance -sdown, -odown, and so forth).
@@ -128,12 +128,12 @@ sentinel failover-timeout <%= @config.sentenil_master_name %> <%= @config.sentin
 # Example:
 #
 <% if @config.sentinel_notification %>
-sentinel notification-script <%= @config.sentenil_master_name %> <%= @config.sentinel_notification %>
+sentinel notification-script <%= @config.sentinel_master_name %> <%= @config.sentinel_notification %>
 <% end %>
 
 # CLIENTS RECONFIGURATION SCRIPT
 #
-# sentinel client-reconfig-script <%= @config.sentenil_master_name %> <script-path>
+# sentinel client-reconfig-script <%= @config.sentinel_master_name %> <script-path>
 #
 # When the master changed because of a failover a script can be called in
 # order to perform application-specific tasks to notify the clients that the
@@ -141,7 +141,7 @@ sentinel notification-script <%= @config.sentenil_master_name %> <%= @config.sen
 #
 # The following arguments are passed to the script:
 #
-# <%= @config.sentenil_master_name %> <role> <state> <from-ip> <from-port> <to-ip> <to-port>
+# <%= @config.sentinel_master_name %> <role> <state> <from-ip> <from-port> <to-ip> <to-port>
 #
 # <state> is currently always "failover"
 # <role> is either "leader" or "observer"
@@ -155,5 +155,5 @@ sentinel notification-script <%= @config.sentenil_master_name %> <%= @config.sen
 # Example:
 #
 <% if @config.sentinel_client_reconfig %>
-sentinel client-reconfig-script <%= @config.sentenil_master_name %> <%= @config.sentinel_client_reconfig %>
+sentinel client-reconfig-script <%= @config.sentinel_master_name %> <%= @config.sentinel_client_reconfig %>
 <% end %>
