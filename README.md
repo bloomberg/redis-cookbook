@@ -44,7 +44,7 @@ end
 
 License & Authors
 -----------------
-- Author:: Anthony Caiafa (<2600.ac@gmail.com>)
+- Author:: Anthony Caiafa (<acaiafa1@bloomberg.net>)
 
 ```text
 Copyright 2015 Bloomberg Finance L.P.
