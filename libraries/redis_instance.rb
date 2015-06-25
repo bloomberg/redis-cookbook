@@ -11,6 +11,9 @@ class Chef::Resource::RedisInstance < Chef::Resource
   provides(:redis_instance)
   include PoiseService::ServiceMixin
 
+  actions(:enable, :disable)
+  default_action(:enable)
+
   # @!attribute config_name
   # @return [String]
   attribute(:config_name, kind_of: String, name_attribute: true)
