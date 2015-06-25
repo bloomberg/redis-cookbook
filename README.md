@@ -24,7 +24,9 @@ All attributes are built directly into the resource and most if not all have def
 The most basic approach to get all of the default redis settings is here:
 
 ```ruby
-redis_instance "redis"
+redis_instance "redis" do
+ action [:enable, :start]
+end
 ```
 
 You have the ability to tune everything and anything redis. You simply have to pass the attribute name like so:
@@ -32,6 +34,7 @@ You have the ability to tune everything and anything redis. You simply have to p
 ```ruby
 redis_instance "redis" do
   bind "172.16.10.10
+  action [:enable, :start]
 end
 ```
 
@@ -39,6 +42,7 @@ You have the ability to enable sentinel with the below block.
 ```ruby 
 redis_instance "redis" do 
   sentinel true
+  action [:enable, :start]
 end
 ```
 

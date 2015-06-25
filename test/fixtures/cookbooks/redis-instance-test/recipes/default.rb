@@ -1,1 +1,3 @@
-redis_instance 'redis-test'
+redis_instance 'redis-test' do
+  action [:enable, :start]
+end
