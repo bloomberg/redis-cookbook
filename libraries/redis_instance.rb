@@ -116,7 +116,7 @@ module RedisCookbook
       # Installs and sets up the Redis package and configuration.
       # @since 1.0.0
       def action_create
-          notifying_block do
+        notifying_block do
           # Install Packages
           package new_resource.pkg do
             package_name new_resource.pkg
