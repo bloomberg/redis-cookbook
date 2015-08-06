@@ -5,4 +5,6 @@
 # Copyright (C) 2015 Bloomberg Finance L.P.
 #
 
-redis_instance 'redis'
+redis_instance 'redis' do
+  action [:create, :enable]
+end
