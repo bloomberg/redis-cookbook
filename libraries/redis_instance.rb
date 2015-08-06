@@ -1,8 +1,9 @@
 #
-# Cookbook: redis-cookbook
+# Cookbook: redis
 # License: Apache 2.0
 #
 # Copyright (C) 2015 Bloomberg Finance L.P.
+#
 require 'poise_service/service_mixin'
 require_relative 'helpers'
 
@@ -86,19 +87,19 @@ class Chef::Resource::RedisInstance < Chef::Resource
   attribute(:include, kind_of: [Array, NilClass], default: nil)
 
   # @!attribute sentinel
-  # # @return [TrueClass, FalseClass]
-  attribute(:sentinel, :kind_of => [TrueClass, FalseClass], default: false)
+  # @return [TrueClass, FalseClass]
+  attribute(:sentinel, kind_of: [TrueClass, FalseClass], default: false)
 
   # @see: https://github.com/antirez/redis/blob/unstable/sentinel.conf
-  attribute(:sentinel_port, :kind_of => Integer, default: '26379')
-  attribute(:sentinel_master_name, :kind_of => String, default: 'mymaster')
-  attribute(:sentinel_monitor, :kind_of => String, default: '127.0.0.1 6379 2')
-  attribute(:sentinel_auth, :kind_of => String, default: 'notneverthatsecureYOLO')
-  attribute(:sentinel_down, :kind_of => Integer, default: '30000')
-  attribute(:sentinel_parallel, :kind_of => Integer, default: '1')
-  attribute(:sentinel_failover, :kind_of => Integer, default: '180000')
-  attribute(:sentinel_notification, :kind_of => [String, NilClass], default: nil) # Dir.home('redis') + '/notify.sh'
-  attribute(:sentinel_client_reconfig, :kind_of => [String,NilClass], default: nil) # Dir.home('redis') + '/reconfig.sh'
+  attribute(:sentinel_port, kind_of: Integer, default: '26379')
+  attribute(:sentinel_master_name, kind_of: String, default: 'mymaster')
+  attribute(:sentinel_monitor, kind_of: String, default: '127.0.0.1 6379 2')
+  attribute(:sentinel_auth, kind_of: String, default: 'notneverthatsecureYOLO')
+  attribute(:sentinel_down, kind_of: Integer, default: '30000')
+  attribute(:sentinel_parallel, kind_of: Integer, default: '1')
+  attribute(:sentinel_failover, kind_of: Integer, default: '180000')
+  attribute(:sentinel_notification, kind_of: [String, NilClass], default: nil) # Dir.home('redis') + '/notify.sh'
+  attribute(:sentinel_client_reconfig, kind_of: [String, NilClass], default: nil) # Dir.home('redis') + '/reconfig.sh'
 end
 
 class Chef::Provider::RedisInstance < Chef::Provider
@@ -117,8 +118,7 @@ class Chef::Provider::RedisInstance < Chef::Provider
         action :upgrade
       end
 
-      # Create directory if it does not exist
-      directory "#{config_dir}" do
+      directory config_dir do
         recursive true
         action :create
       end
@@ -126,7 +126,7 @@ class Chef::Provider::RedisInstance < Chef::Provider
       # Place configuration file on the filesystem
       template "#{new_resource.config_name} :create #{config_dir}/redis.conf" do
         path "#{config_dir}/redis.conf"
-        source "redis.conf.erb"
+        source 'redis.conf.erb'
         variables(
           config: new_resource
         )
@@ -135,14 +135,11 @@ class Chef::Provider::RedisInstance < Chef::Provider
         group new_resource.group
       end
 
-      # Add statemenet for sentinel configuration.
       unless new_resource.sentinel == false
-        template "sentinel :create #{sentinel_config}" do
-          path "#{sentinel_config}"
-          source "sentinel.conf.erb"
-          variables(
-            config: new_resource
-          )
+        template "#{sentinel_config} :create #{sentinel_config}" do
+          path sentinel_config
+          source 'sentinel.conf.erb'
+          variables(config: new_resource)
           cookbook 'redis'
           owner new_resource.user
           group new_resource.group

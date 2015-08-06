@@ -2,6 +2,7 @@ source 'https://rubygems.org'
 
 group :lint do
   gem 'rubocop'
+  gem 'foodcritic', git: 'https://github.com/acrmp/foodcritic'
 end
 
 group :kitchen_common do

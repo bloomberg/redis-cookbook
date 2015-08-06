@@ -1,7 +1,8 @@
-# Cookbook Name:: redis
-# Recipe:: default
-# All rights reserved - Do Not Redistribute
 #
-## Copyright (C) 2015 Bloomberg Finance L.P.
+# Cookbook: redis
+# License: Apache 2.0
+#
+# Copyright (C) 2015 Bloomberg Finance L.P.
+#
 
-redis_instance "redis"
+redis_instance 'redis'
