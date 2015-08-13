@@ -14,8 +14,6 @@ module RedisCookbook
       include Poise
       provides(:redis_instance)
       include PoiseService::ServiceMixin
-      actions(:create, :delete)
-      default_action(:create)
 
       # @!attribute config_name
       # @return [String]
@@ -115,7 +113,7 @@ module RedisCookbook
 
       # Installs and sets up the Redis package and configuration.
       # @since 1.0.0
-      def action_create
+      def action_enable
         notifying_block do
           # Install Packages
           package new_resource.pkg do
@@ -152,11 +150,13 @@ module RedisCookbook
             end
           end
         end
+        super
       end
 
       # Deletes and removes configuration for the Redis instance.
       # @since 1.0.0
-      def action_delete
+      def action_disable
+        super
         notifying_block do
           directory config_dir do
             action :delete
