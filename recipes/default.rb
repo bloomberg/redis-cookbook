@@ -12,5 +12,5 @@ redis_instance node['redis']['service_name'] do |r|
   user node['redis']['service_user']
   group node['redis']['service_group']
 
-  node['redis']['config'].each_pair { |k,v| r.send(k, v) }
+  node['redis']['config'].each_pair { |k, v| r.send(k, v) }
 end

@@ -45,8 +45,9 @@ AllCops:
     - 'Berksfile'
     - 'Rakefile'
     - 'Vagrantfile'
-    - 'test/**/*.rb'
+    - 'test/**/*'
     - 'bin/*'
+    - 'vendor/**/*'
 
 Style/GuardClause:
   Enabled: false
