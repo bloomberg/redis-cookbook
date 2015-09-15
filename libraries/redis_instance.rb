@@ -160,6 +160,7 @@ module RedisCookbook
         notifying_block do
           directory config_dir do
             action :delete
+            not_if { config_dir == '/etc' }
           end
         end
       end
