@@ -5,9 +5,7 @@
 
 ## Usage
 ### Supports
-- Ubuntu 
-
-Currently this does not support sentinal but it will in due time.
+- Ubuntu
 
 ### Dependencies
 | Name | Description |
@@ -31,13 +29,13 @@ You have the ability to tune everything and anything redis. You simply have to p
 
 ```ruby
 redis_instance "redis" do
-  bind "172.16.10.10
+  bind "172.16.10.10"
 end
 ```
 
 You have the ability to enable sentinel with the below block.
-```ruby 
-redis_instance "redis" do 
+```ruby
+redis_instance "redis" do
   sentinel true
 end
 ```
