@@ -176,9 +176,14 @@ module RedisCookbook
       def action_disable
         super
         notifying_block do
+          file config_path do
+            action :delete
+          end
+
           directory new_resource.config_dir do
             action :delete
             not_if { new_resource.config_dir == '/etc' }
+            only_if { Dir["#{new_resource.config_dir}/*"].empty? }
           end
         end
       end
