@@ -139,11 +139,16 @@ module RedisCookbook
 
           directory new_resource.dir do
             recursive true
+            user new_resource.user
+            group new_resource.group
+            mode '0755'
           end
 
           directory new_resource.config_dir do
             recursive true
-            action :create
+            user new_resource.user
+            group new_resource.group
+            mode '0755'
           end
 
           # Place configuration file on the filesystem
