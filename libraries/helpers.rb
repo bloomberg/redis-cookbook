@@ -6,7 +6,7 @@ module RedisCookbook
 
     # Get config file location based on redis instance name
     def config_path
-      ::File.join(new_resource.config_dir,"#{new_resource.instance_name}.conf")
+      ::File.join(new_resource.config_dir, "#{new_resource.instance_name}.conf")
     end
 
     # Method for start command if sentinel is being used.

@@ -43,7 +43,6 @@ module RedisCookbook
       # @return [String]
       attribute(:log_dir, kind_of: String, default: '/var/log/redis/')
 
-
       # @see: https://raw.githubusercontent.com/antirez/redis/2.8/redis.conf
       attribute(:port, kind_of: Integer, default: '6379')
       attribute(:bind, kind_of: String, default: '0.0.0.0')
@@ -54,7 +53,7 @@ module RedisCookbook
       attribute(:syslog_enabled, kind_of: [String, NilClass], default: nil)
       attribute(:syslog_ident, kind_of: [String, NilClass], default: nil)
       attribute(:syslog_facility, kind_of: [String, NilClass], default: nil)
-      attribute(:logfile, kind_of: String, default: lazy { ::File.join(log_dir,"#{instance_name}.log") })
+      attribute(:logfile, kind_of: String, default: lazy { ::File.join(log_dir, "#{instance_name}.log") })
       attribute(:databases, kind_of: Integer, default: '16')
       attribute(:save, kind_of: [String, Array], default: ['900 1', '300 10', '60 10000'])
       attribute(:stop_writes_on_bgsave_error, equal_to: %w{yes no}, default: 'yes')
@@ -134,7 +133,7 @@ module RedisCookbook
           # Installing package starts redis service automatically
           # Disable this so that redis can be managed through poise-service
           service new_resource.pkg do
-            action [:disable,:stop]
+            action [:disable, :stop]
           end
 
           directory new_resource.dir do
@@ -161,7 +160,6 @@ module RedisCookbook
             group new_resource.group
             notifies :restart, new_resource
           end
-
         end
         super
       end
