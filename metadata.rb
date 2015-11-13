@@ -3,7 +3,7 @@ maintainer 'Anthony Caiafa'
 maintainer_email '2600.ac@gmail.com'
 description 'Application cookbook which installs and configures Redis.'
 long_description 'Application cookbook which installs and configures Redis.'
-version '1.0.0'
+version '1.0.1'
 
 supports 'redhat', '>= 5.8'
 supports 'centos', '>= 5.8'
