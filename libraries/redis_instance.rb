@@ -147,26 +147,16 @@ module RedisCookbook
           end
 
           # Place configuration file on the filesystem
-          template 'redis-server-config' do
-            path config_path
-            source 'redis.conf.erb'
+          config_source = new_resource.sentinel ? 'sentinel.conf.erb' : 'redis.conf.erb'
+          template config_path do
+            source config_source
             variables(config: new_resource)
             cookbook 'redis'
             owner new_resource.user
             group new_resource.group
-            not_if { new_resource.sentinel }
             notifies :restart, new_resource
           end
-          template 'redis-sentinel-config' do
-            path config_path
-            source 'sentinel.conf.erb'
-            variables(config: new_resource)
-            cookbook 'redis'
-            owner new_resource.user
-            group new_resource.group
-            only_if { new_resource.sentinel }
-            notifies :restart, new_resource
-          end
+
         end
         super
       end

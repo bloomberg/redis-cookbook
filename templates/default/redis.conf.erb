@@ -35,7 +35,7 @@ bind <%= @config.bind %>
 #
 # unixsocket /var/run/redis/redis.sock
 # unixsocketperm 755
-<% if @config.unixsocket %> 
+<% if @config.unixsocket %>
 unixsocket <%= @config.unixsocket %>
 <% end %>
 <% if @config.unixsocketperm %>
@@ -130,7 +130,7 @@ databases <%= @config.databases.to_s %>
 # and persistence, you may want to disable this feature so that Redis will
 # continue to work as usually even if there are problems with disk,
 # permissions, and so forth.
-<% if @config.stop_writes_on_bgsave_error %> 
+<% if @config.stop_writes_on_bgsave_error %>
 stop-writes-on-bgsave-error <%= @config.stop_writes_on_bgsave_error %>
 <% end %>
 
@@ -179,8 +179,12 @@ dir <%= @config.dir %>
 #
 # slaveof <masterip> <masterport>
 <% if @config.slaveof %>
-  <% @config.slaveof.each do |s| %>
+  <% if @config.slaveof.kind_of?(Array) %>
+      <% @config.slaveof.each do |s| %>
 <%= "slaveof #{s}" %>
+      <% end %>
+  <% else %>
+<%= "slaveof #{@config.slaveof}" %>
   <% end %>
 <% end %>
 
