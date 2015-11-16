@@ -15,9 +15,9 @@ module RedisCookbook
       provides(:redis_instance)
       include PoiseService::ServiceMixin
 
-      # @!attribute config_name
+      # @!attribute instance_name
       # @return [String]
-      attribute(:config_name, kind_of: String, name_attribute: true)
+      attribute(:instance_name, kind_of: String, name_attribute: true)
 
       # @!attribute pkg
       # @return [String]
@@ -29,14 +29,21 @@ module RedisCookbook
 
       # @!attribute user
       # @return [String]
-      attribute(:user, kind_of: String, default: 'root')
+      attribute(:user, kind_of: String, default: 'redis')
 
       # @!attribute group
       # @return [String]
-      attribute(:group, kind_of: String, default: 'root')
+      attribute(:group, kind_of: String, default: 'redis')
+
+      # @!attribute config_dir
+      # @return [String]
+      attribute(:config_dir, kind_of: String, default: '/etc/redis')
+
+      # @!attribute log_dir
+      # @return [String]
+      attribute(:log_dir, kind_of: String, default: '/var/log/redis/')
 
       # @see: https://raw.githubusercontent.com/antirez/redis/2.8/redis.conf
-      attribute(:pid_file, kind_of: String, default: '/var/run/redis/redis-server.pid')
       attribute(:port, kind_of: Integer, default: '6379')
       attribute(:bind, kind_of: String, default: '0.0.0.0')
       attribute(:unixsocket, kind_of: [String, NilClass], default: nil)
@@ -46,13 +53,13 @@ module RedisCookbook
       attribute(:syslog_enabled, kind_of: [String, NilClass], default: nil)
       attribute(:syslog_ident, kind_of: [String, NilClass], default: nil)
       attribute(:syslog_facility, kind_of: [String, NilClass], default: nil)
-      attribute(:logfile, kind_of: String, default: '/var/log/redis/redis-server.log')
+      attribute(:logfile, kind_of: String, default: lazy { ::File.join(log_dir, "#{instance_name}.log") })
       attribute(:databases, kind_of: Integer, default: '16')
       attribute(:save, kind_of: [String, Array], default: ['900 1', '300 10', '60 10000'])
       attribute(:stop_writes_on_bgsave_error, equal_to: %w{yes no}, default: 'yes')
       attribute(:rdbcompression, equal_to: %w{yes no}, default: 'yes')
       attribute(:rdbchecksum, equal_to: %w{yes no}, default: 'yes')
-      attribute(:dir, kind_of: String, default: '/var/lib/redis')
+      attribute(:dir, kind_of: String, default: lazy { "/var/lib/redis/#{instance_name}" })
       attribute(:slaveof, kind_of: [String, Array, NilClass], default: nil)
       attribute(:masterauth, kind_of: [String, NilClass], default: nil)
       attribute(:slave_serve_stale_data, equal_to: %w{yes no}, default: 'yes')
@@ -120,34 +127,38 @@ module RedisCookbook
             package_name new_resource.pkg
             version new_resource.version unless new_resource.version.nil?
             action :upgrade
+            notifies :restart, new_resource
           end
 
-          directory config_dir do
+          # Installing package starts redis service automatically
+          # Disable this so that redis can be managed through poise-service
+          service new_resource.pkg do
+            action [:disable, :stop]
+          end
+
+          directory new_resource.dir do
             recursive true
-            action :create
+            user new_resource.user
+            group new_resource.group
+            mode '0755'
+          end
+
+          directory new_resource.config_dir do
+            recursive true
+            user new_resource.user
+            group new_resource.group
+            mode '0755'
           end
 
           # Place configuration file on the filesystem
-          template "#{new_resource.config_name} :create #{config_dir}/redis.conf" do
-            path "#{config_dir}/redis.conf"
-            source 'redis.conf.erb'
-            variables(
-              config: new_resource
-            )
+          config_source = new_resource.sentinel ? 'sentinel.conf.erb' : 'redis.conf.erb'
+          template config_path do
+            source config_source
+            variables(config: new_resource)
             cookbook 'redis'
             owner new_resource.user
             group new_resource.group
-          end
-
-          unless new_resource.sentinel == false
-            template "#{sentinel_config} :create #{sentinel_config}" do
-              path sentinel_config
-              source 'sentinel.conf.erb'
-              variables(config: new_resource)
-              cookbook 'redis'
-              owner new_resource.user
-              group new_resource.group
-            end
+            notifies :restart, new_resource
           end
         end
         super
@@ -158,18 +169,22 @@ module RedisCookbook
       def action_disable
         super
         notifying_block do
-          directory config_dir do
+          file config_path do
             action :delete
-            not_if { config_dir == '/etc' }
+          end
+
+          directory new_resource.config_dir do
+            action :delete
+            not_if { new_resource.config_dir == '/etc' }
+            only_if { Dir["#{new_resource.config_dir}/*"].empty? }
           end
         end
       end
 
       def service_options(service)
-        service.service_name('redis')
         service.command(start_command)
-        service.directory('/var/run/redis')
-        service.user('redis')
+        service.directory(new_resource.dir)
+        service.user(new_resource.user)
         service.restart_on_update(true)
       end
     end

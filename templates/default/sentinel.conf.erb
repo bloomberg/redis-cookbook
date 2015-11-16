@@ -6,6 +6,22 @@
 port <%= @config.sentinel_port %>
 <% end %>
 
+# dir <working-directory>
+# Every long running process should have a well-defined working directory.
+# For Redis Sentinel to chdir to /tmp at startup is the simplest thing
+# for the process to don't interfere with administrative tasks such as
+# unmounting filesystems.
+<% if @config.dir %>
+dir <%= @config.dir %>
+<% end %>
+
+# Specify the log file name. Also 'stdout' can be used to force
+# Redis to log on the standard output. Note that if you use standard
+# output for logging but daemonize, logs will be sent to /dev/null
+<% if @config.logfile %>
+logfile <%= @config.logfile %>
+<% end %>
+
 # sentinel monitor <%= @config.sentinel_master_name %> <ip> <redis-port> <quorum>
 #
 # Tells Sentinel to monitor this master, and to consider it in O_DOWN
