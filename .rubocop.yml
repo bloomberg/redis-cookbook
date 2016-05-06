@@ -31,7 +31,11 @@ Metrics/AbcSize:
   Enabled: false
 PerceivedComplexity:
   Enabled: false
+<<<<<<< 28dd8b7706da63f66649d147adba09341b74c06e
 Style/SpaceBeforeFirstArg:
+=======
+SpaceBeforeFirstArg:
+>>>>>>> Update repository with new configuration files.
   Enabled: false
 Style/ClassAndModuleChildren:
   Enabled: false
@@ -42,4 +46,11 @@ Style/GuardClause:
 Style/PercentLiteralDelimiters:
   Enabled: false
 Style/ModuleFunction:
+<<<<<<< 28dd8b7706da63f66649d147adba09341b74c06e
+=======
+  Enabled: false
+Style/IndentationWidth:
+  Enabled: false
+Style/IndentArray:
+>>>>>>> Update repository with new configuration files.
   Enabled: false
