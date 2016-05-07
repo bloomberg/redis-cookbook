@@ -8,6 +8,8 @@ require 'poise'
 
 module RedisCookbook
   module Resource
+    # An `redis_installation` resource which manages the Redis
+    # installation on the node.
     # @provides redis_installation
     # @action create
     # @action remove
@@ -16,6 +18,7 @@ module RedisCookbook
       include Poise(inversion: true)
       provides(:redis_installation)
       actions(:create, :remove)
+      default_action(:create)
 
       # @!attribute version
       # The version of Redis to install.
@@ -25,6 +28,11 @@ module RedisCookbook
       # @return [String]
       def redis_program
         @program ||= provider_for_action(:redis_program).redis_program
+      end
+
+      # @return [String]
+      def sentinel_program
+        @sentinel_program ||= provider_for_action(:sentinel_program).sentinel_program
       end
 
       # @return [String]

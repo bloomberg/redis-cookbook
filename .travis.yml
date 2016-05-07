@@ -8,6 +8,5 @@ rvm:
 branches:
   only:
     - master
-builder_args: --without kitchen_vagrant
 matrix:
   fast_finish: true

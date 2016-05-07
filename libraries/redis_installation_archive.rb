@@ -18,13 +18,13 @@ module RedisCookbook
 
       # Set the default inversion options.
       # @param [Chef::Node] _node
-      # @param [Chef::Resource] _resource
+      # @param [Chef::Resource] resource
       # @return [Hash]
       # @api private
-      def self.default_inversion_options(_node, _resource)
+      def self.default_inversion_options(_node, resource)
         super.merge(
           archive_url: "http://download.redis.io/releases/redis-%{version}.tar.gz",
-          archive_checksum: default_archive_checksum
+          archive_checksum: default_archive_checksum(resource)
         )
       end
 
@@ -37,9 +37,9 @@ module RedisCookbook
             action :nothing
             destination redis_base
             not_if { ::Dir.exist?(destination) }
-            notifies :create, 'link[/usr/local/sbin/redis-server]'
-            notifies :create, 'link[/usr/local/sbin/redis-sentinel]'
-            notifies :create, 'link[/usr/local/sbin/redis-cli]'
+            notifies :create, 'link[/usr/local/bin/redis-server]'
+            notifies :create, 'link[/usr/local/bin/redis-sentinel]'
+            notifies :create, 'link[/usr/local/bin/redis-cli]'
           end
 
           remote_file ::File.basename(url) do
@@ -49,17 +49,17 @@ module RedisCookbook
             notifies :unpack, "poise_archive[#{name}]"
           end
 
-          link '/usr/local/sbin/redis-server' do
+          link '/usr/local/bin/redis-server' do
             to redis_program
             only_if { ::File.exist?(redis_program) }
           end
 
-          link '/usr/local/sbin/redis-sentinel' do
+          link '/usr/local/bin/redis-sentinel' do
             to sentinel_program
             only_if { ::File.exist?(sentinel_program) }
           end
 
-          link '/usr/local/sbin/redis-cli' do
+          link '/usr/local/bin/redis-cli' do
             to cli_program
             only_if { ::File.exist?(cli_program) }
           end
@@ -68,17 +68,17 @@ module RedisCookbook
 
       def action_remove
         notifying_block do
-          link '/usr/local/sbin/redis-server' do
+          link '/usr/local/bin/redis-server' do
             to redis_program
             action :delete
           end
 
-          link '/usr/local/sbin/redis-sentinel' do
+          link '/usr/local/bin/redis-sentinel' do
             to sentinel_program
             action :delete
           end
 
-          link '/usr/local/sbin/redis-cli' do
+          link '/usr/local/bin/redis-cli' do
             to cli_program
             action :delete
           end
@@ -99,13 +99,19 @@ module RedisCookbook
       # @return [String]
       # @api private
       def redis_program
-        options(:program, ::File.join(redis_base, 'src', 'redis-server'))
+        options.fetch(:program, ::File.join(redis_base, 'src', 'redis-server'))
+      end
+
+      # @return [String]
+      # @api private
+      def sentinel_program
+        options.fetch(:sentinel_program, ::File.join(redis_base, 'src', 'redis-sentinel'))
       end
 
       # @return [String]
       # @api private
       def cli_program
-        options(:cli_program, ::File.join(redis_base, 'src', 'redis-cli'))
+        options.fetch(:cli_program, ::File.join(redis_base, 'src', 'redis-cli'))
       end
 
       # @param [Chef::Resource] resource

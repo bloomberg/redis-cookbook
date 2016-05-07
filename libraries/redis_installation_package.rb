@@ -26,8 +26,10 @@ module RedisCookbook
 
       # Set the default inversion options.
       # @return [Hash]
+      # @param [Chef::Node] node
+      # @param [Chef::Resource] _resource
       # @api private
-      def self.default_inversion_options(node, resource)
+      def self.default_inversion_options(node, _resource)
         super.merge(
           package: default_package_name(node),
           version: default_package_version(node)
@@ -77,13 +79,19 @@ module RedisCookbook
       # @return [String]
       # @api private
       def redis_program
-        options(:program, '/usr/sbin/redis-server')
+        options.fetch(:program, '/usr/bin/redis-server')
+      end
+
+      # @return [String]
+      # @api private
+      def sentinel_program
+        options.fetch(:sentinel_program, '/usr/bin/redis-sentinel')
       end
 
       # @return [String]
       # @api private
       def cli_program
-        options(:cli_program, '/usr/sbin/redis-cli')
+        options.fetch(:cli_program, '/usr/bin/redis-cli')
       end
 
       # @param [Chef::Node] node
@@ -92,6 +100,7 @@ module RedisCookbook
         case node.platform_family
         when 'rhel' then 'redis'
         when 'debian' then 'redis-server'
+        when 'freebsd' then 'redis'
         end
       end
 
@@ -102,15 +111,19 @@ module RedisCookbook
         case node.platform
         when 'redhat', 'centos'
           case node.platform_version.to_i
-          when 5 then '2.4.10-1'
-          when 6 then '2.4.10-1'
-          when 7 then '2.8.19-2'
+          when 5 then '2.4.10-1.el5'
+          when 6 then '2.4.10-1.el6'
+          when 7 then '2.8.19-2.el7'
           end
         when 'ubuntu'
           case node.platform_version.to_i
           when 12 then '2.2.12-1'
-          when 14 then '2.8.4-2'
-          when 16 then '3.0.6-1'
+          when 14 then '2:2.8.4-2'
+          when 16 then '2:3.0.6-1'
+          end
+        when 'freebsd'
+          case node.platform_version.to_i
+          when 10 then '3.0.7'
           end
         end
       end

@@ -4,8 +4,6 @@
 #
 # Copyright 2015-2016, Bloomberg Finance L.P.
 #
-include_recipe 'yum-epel::default' if node.platform_family?('rhel')
-
 poise_service_user node['redis']['service_user'] do
   group node['redis']['service_group']
 end
@@ -19,6 +17,7 @@ config = redis_config node['redis']['service_name'] do |r|
 end
 
 redis_instance node['redis']['service_name'] do
+  directory config.dir
   config_file config.path
   program install.redis_program
 

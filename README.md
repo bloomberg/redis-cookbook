@@ -10,7 +10,7 @@ key-value database and [Redis Sentinel][2] which provides
 high-availability for the database.
 
 ## Platforms
-The following platforms are tested using [Test Kitchen][1] integration tests:
+The following platforms are tested using [Test Kitchen][1]:
 
 - Ubuntu 12.04/14.04/16.04
 - CentOS 5/6/7

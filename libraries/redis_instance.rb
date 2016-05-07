@@ -40,10 +40,11 @@ module RedisCookbook
       # @!attribute config_file
       # The program path for Redis.
       # @return [String]
-      attribute(:program, kind_of: String, default: '/usr/sbin/redis-server')
+      attribute(:program, kind_of: String, default: '/usr/bin/redis-server')
 
+      # @api private
       def command
-        "#{program} -c #{config_file}"
+        "#{program} #{config_file}"
       end
     end
   end
@@ -55,20 +56,21 @@ module RedisCookbook
     # @since 1.0
     class RedisInstance < Chef::Provider
       include Poise
-      provides(:redis_sentinel_instance)
+      provides(:redis_instance)
       include PoiseService::ServiceMixin
 
       def action_enable
         notifying_block do
           directory new_resource.directory do
-            owner new_resource.user
-            owner new_resource.group
             recursive true
+            owner new_resource.user
+            group new_resource.group
           end
         end
         super
       end
 
+      # @api private
       def service_options(service)
         service.command(new_resource.command)
         service.directory(new_resource.directory)

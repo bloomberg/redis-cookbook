@@ -4,11 +4,13 @@
 #
 # Copyright 2015-2016, Bloomberg Finance L.P.
 #
-include_recipe 'yum-epel::default' if node.platform_family?('rhel')
+poise_service_user node['redis']['service_user'] do
+  group node['redis']['service_group']
+end
 
 install = redis_installation node['redis']['service_name']
 
-config = redis_config node['redis']['sentinel']['service_name'] do |r|
+config = redis_sentinel_config node['redis']['sentinel']['service_name'] do |r|
   owner node['redis']['service_owner']
   group node['redis']['service_group']
   node['redis']['sentinel']['config'].each_pair { |k, v| r.send(k, v) }
@@ -16,7 +18,7 @@ end
 
 redis_instance node['redis']['sentinel']['service_name'] do
   config_file config.path
-  program install.redis_program
+  program install.sentinel_program
 
   user node['redis']['service_user']
   group node['redis']['service_group']

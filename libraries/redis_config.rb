@@ -12,18 +12,33 @@ module RedisCookbook
     # node.
     # @provides redis_config
     # @action create
-    # @action remove
+    # @action delete
     # @since 2.0
     class RedisConfig < Chef::Resource
       include Poise(fused: true)
       provides(:redis_config)
 
-      attribute(:path, kind_of: String, '/etc/redis.conf')
+      # @!attribute path
+      # @return [String]
+      attribute(:path, kind_of: String, default: '/etc/redis.conf')
+      # @!attribute owner
+      # @return [String]
       attribute(:owner, kind_of: String, default: 'redis')
+      # @!attribute group
+      # @return [String]
       attribute(:group, kind_of: String, default: 'redis')
+      # @!attribute mode
+      # @return [String]
       attribute(:mode, kind_of: String, default: '0440')
 
-      # @see: https://raw.githubusercontent.com/antirez/redis/2.8/redis.conf
+      # @!attribute instance_name
+      # @return [String]
+      attribute(:instance_name, kind_of: String, name_attribute: true)
+      # @!attribute log_dir
+      # @return [String]
+      attribute(:log_dir, kind_of: String, default: '/var/log/redis')
+
+      # @see: https://github.com/antirez/redis/blob/3.2/redis.conf
       attribute(:port, kind_of: Integer, default: 6_379)
       attribute(:bind, kind_of: String, default: '0.0.0.0')
       attribute(:unixsocket, kind_of: [String, NilClass], default: nil)
@@ -58,7 +73,7 @@ module RedisCookbook
       attribute(:appendfsync, kind_of: String, default: 'everysec')
       attribute(:no_appendfsync_on_rewrite, equal_to: %w{yes no}, default: 'no')
       attribute(:auto_aof_rewrite_percentage, kind_of: Integer, default: 100)
-      attribute(:auto_aof_rewrite_min_size, kind_of: Integer, default: '64mb')
+      attribute(:auto_aof_rewrite_min_size, kind_of: String, default: '64mb')
       attribute(:lua_time_limit, kind_of: Integer, default: 5_000)
       attribute(:slowlog_log_slower_than, kind_of: Integer, default: 10_000)
       attribute(:slowlog_max_len, kind_of: Integer, default: 128)
@@ -74,7 +89,7 @@ module RedisCookbook
 
       action(:create) do
         template new_resource.path do
-          source 'redis-server.conf.erb'
+          source 'redis.conf.erb'
           owner new_resource.owner
           group new_resource.group
           mode new_resource.mode

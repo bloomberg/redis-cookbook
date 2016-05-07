@@ -19,14 +19,14 @@ daemonize no
 
 # Accept connections on the specified port, default is 6379.
 # If port 0 is specified Redis will not listen on a TCP socket.
-<% if @config.port  %>
-port <%= @config.port.to_s %>
+<% if @resource.port  %>
+port <%= @resource.port.to_s %>
 <% end %>
 
 # If you want you can bind a single interface, if the bind option is not
 # specified all the interfaces will listen for incoming connections.
-<% if @config.bind %>
-bind <%= @config.bind %>
+<% if @resource.bind %>
+bind <%= @resource.bind %>
 <% end %>
 
 # Specify the path for the unix socket that will be used to listen for
@@ -35,16 +35,16 @@ bind <%= @config.bind %>
 #
 # unixsocket /var/run/redis/redis.sock
 # unixsocketperm 755
-<% if @config.unixsocket %>
-unixsocket <%= @config.unixsocket %>
+<% if @resource.unixsocket %>
+unixsocket <%= @resource.unixsocket %>
 <% end %>
-<% if @config.unixsocketperm %>
-unixsocketperm <%= @config.unixsocketperm %>
+<% if @resource.unixsocketperm %>
+unixsocketperm <%= @resource.unixsocketperm %>
 <% end %>
 
 # Close the connection after a client is idle for N seconds (0 to disable)
-<% if @config.timeout %>
-timeout <%= @config.timeout %>
+<% if @resource.timeout %>
+timeout <%= @resource.timeout %>
 <% end %>
 
 # Set server verbosity to 'debug'
@@ -631,19 +631,6 @@ activerehashing <%= @resource.activerehashing %>
 # Both the hard or the soft limit can be disabled just setting it to zero.
 <% if @resource.client_output_buffer_limit %>
   <% @resource.client_output_buffer_limit.each do |c| %>
-   <%= "client-output-buffer-limit #{c}" %>
-  <% end %>
-<% end %>
-
-################################## INCLUDES ###################################
-
-# Include one or more other config files here.  This is useful if you
-# have a standard template that goes to all Redis server but also need
-# to customize a few per-server settings.  Include files can include
-# other files, so use this wisely.
-#
-<% if @resource.include %>
-  <% @include.each do |i| %>
-      <%= "include #{i}" %>
+<%= "client-output-buffer-limit #{c}" %>
   <% end %>
 <% end %>

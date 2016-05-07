@@ -12,18 +12,30 @@ module RedisCookbook
     # configuration of a node.
     # @provides redis_sentinel_config
     # @action create
-    # @action remove
+    # @action delete
     # @since 2.0
     class RedisSentinelConfig < Chef::Resource
       include Poise(fused: true)
       provides(:redis_sentinel_config)
 
+      # @!attribute path
+      # @return [String]
       attribute(:path, kind_of: String, default: '/etc/redis-sentinel.conf')
+      # @!attribute owner
+      # @return [String]
       attribute(:owner, kind_of: String, default: 'redis')
+      # @!attribute group
+      # @return [String]
       attribute(:group, kind_of: String, default: 'redis')
+      # @!attribute mode
+      # @return [String]
       attribute(:mode, kind_of: String, default: '0440')
 
-      # @see: https://github.com/antirez/redis/blob/unstable/sentinel.conf
+      # @!attribute instance_name
+      # @return [String]
+      attribute(:instance_name, kind_of: String, name_attribute: true)
+
+      # @see: https://github.com/antirez/redis/blob/3.2/sentinel.conf
       attribute(:sentinel_port, kind_of: Integer, default: 26_379)
       attribute(:sentinel_master_name, kind_of: String, default: 'mymaster')
       attribute(:sentinel_monitor, kind_of: String, default: '127.0.0.1 6379 2')
@@ -36,7 +48,7 @@ module RedisCookbook
 
       action(:create) do
         template new_resource.path do
-          source 'redis-server.conf.erb'
+          source 'sentinel.conf.erb'
           owner new_resource.owner
           group new_resource.group
           mode new_resource.mode
