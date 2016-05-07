@@ -16,19 +16,46 @@ module RedisCookbook
       include Poise(inversion: :redis_installation)
       provides(:package)
 
+      # @param [Chef::Node] _node
+      # @param [Chef::Resource] _resource
+      # @return [TrueClass, FalseClass]
+      # @api private
+      def self.provides_auto?(_node, _resource)
+        true
+      end
+
       # Set the default inversion options.
       # @return [Hash]
       # @api private
       def self.default_inversion_options(node, resource)
-        super.merge(package: default_package_name(node))
+        super.merge(
+          package: default_package_name(node),
+          version: default_package_version(node)
+        )
       end
 
       def action_create
         notifying_block do
+          init_file = file '/etc/init.d/redis-server' do
+            action :nothing
+          end
+
+          if node.platform_family?('debian')
+            dpkg_autostart 'redis-server' do
+              action :create
+              allow false
+            end
+          end
+
           package_version = options[:version]
+          package_source = options[:source]
           package options[:package] do
+            notifies :delete, init_file, :immediately
             version package_version if package_version
-            action :upgrade
+            source package_source if package_source
+            if node.platform_family?('debian')
+              options '-o Dpkg::Options::=--path-exclude=/etc/redis*'
+            end
           end
         end
       end
@@ -53,11 +80,38 @@ module RedisCookbook
         options(:program, '/usr/sbin/redis-server')
       end
 
+      # @return [String]
+      # @api private
+      def cli_program
+        options(:cli_program, '/usr/sbin/redis-cli')
+      end
+
       # @param [Chef::Node] node
       # @return [String]
       def self.default_package_name(node)
         case node.platform_family
+        when 'rhel' then 'redis'
         when 'debian' then 'redis-server'
+        end
+      end
+
+      # @param [Chef::Node] node
+      # @return [String]
+      # @api private
+      def self.default_package_version(node)
+        case node.platform
+        when 'redhat', 'centos'
+          case node.platform_version.to_i
+          when 5 then '2.4.10-1'
+          when 6 then '2.4.10-1'
+          when 7 then '2.8.19-2'
+          end
+        when 'ubuntu'
+          case node.platform_version.to_i
+          when 12 then '2.2.12-1'
+          when 14 then '2.8.4-2'
+          when 16 then '3.0.6-1'
+          end
         end
       end
     end

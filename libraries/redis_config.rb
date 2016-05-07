@@ -8,6 +8,8 @@ require 'poise'
 
 module RedisCookbook
   module Resource
+    # A `redis_config` resource to manage the Redis configuration on a
+    # node.
     # @provides redis_config
     # @action create
     # @action remove
@@ -16,7 +18,7 @@ module RedisCookbook
       include Poise(fused: true)
       provides(:redis_config)
 
-      attribute(:path, kind_of: String)
+      attribute(:path, kind_of: String, '/etc/redis.conf')
       attribute(:owner, kind_of: String, default: 'redis')
       attribute(:group, kind_of: String, default: 'redis')
       attribute(:mode, kind_of: String, default: '0440')
@@ -70,23 +72,20 @@ module RedisCookbook
       attribute(:activerehashing, equal_to: %w{yes no}, default: 'yes')
       attribute(:client_output_buffer_limit, kind_of: [String, Array], default: ['normal 0 0 0', 'slave 256mb 64mb 60', 'pubsub 32mb 8mb 60'])
 
-      # @see: https://github.com/antirez/redis/blob/unstable/sentinel.conf
-      attribute(:sentinel_port, kind_of: Integer, default: 26_379)
-      attribute(:sentinel_master_name, kind_of: String, default: 'mymaster')
-      attribute(:sentinel_monitor, kind_of: String, default: '127.0.0.1 6379 2')
-      attribute(:sentinel_auth, kind_of: String, default: 'notneverthatsecureYOLO')
-      attribute(:sentinel_down, kind_of: Integer, default: '30000')
-      attribute(:sentinel_parallel, kind_of: Integer, default: 1)
-      attribute(:sentinel_failover, kind_of: Integer, default: 180_000)
-      attribute(:sentinel_notification, kind_of: [String, NilClass], default: nil)
-      attribute(:sentinel_client_reconfig, kind_of: [String, NilClass], default: nil)
-
       action(:create) do
-
+        template new_resource.path do
+          source 'redis-server.conf.erb'
+          owner new_resource.owner
+          group new_resource.group
+          mode new_resource.mode
+          variables resource: new_resource
+        end
       end
 
-      action(:remove) do
-
+      action(:delete) do
+        file new_resource.path do
+          action :delete
+        end
       end
     end
   end

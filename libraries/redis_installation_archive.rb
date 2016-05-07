@@ -16,14 +16,6 @@ module RedisCookbook
       include Poise(inversion: :redis_installation)
       provides(:archive)
 
-      # @param [Chef::Node] _node
-      # @param [Chef::Resource] _resource
-      # @return [TrueClass, FalseClass]
-      # @api private
-      def self.provides_auto?(_node, _resource)
-        true
-      end
-
       # Set the default inversion options.
       # @param [Chef::Node] _node
       # @param [Chef::Resource] _resource
@@ -37,21 +29,83 @@ module RedisCookbook
       end
 
       def action_create
+        url = options[:archive_url] % {version: new_resource.version}
         notifying_block do
+          include_recipe 'build-essential::default'
 
+          poise_archive ::File.basename(url) do
+            action :nothing
+            destination redis_base
+            not_if { ::Dir.exist?(destination) }
+            notifies :create, 'link[/usr/local/sbin/redis-server]'
+            notifies :create, 'link[/usr/local/sbin/redis-sentinel]'
+            notifies :create, 'link[/usr/local/sbin/redis-cli]'
+          end
+
+          remote_file ::File.basename(url) do
+            source url
+            checksum options[:archive_checksum]
+            path ::File.join(Chef::Config[:file_cache_path], name)
+            notifies :unpack, "poise_archive[#{name}]"
+          end
+
+          link '/usr/local/sbin/redis-server' do
+            to redis_program
+            only_if { ::File.exist?(redis_program) }
+          end
+
+          link '/usr/local/sbin/redis-sentinel' do
+            to sentinel_program
+            only_if { ::File.exist?(sentinel_program) }
+          end
+
+          link '/usr/local/sbin/redis-cli' do
+            to cli_program
+            only_if { ::File.exist?(cli_program) }
+          end
         end
       end
 
       def action_remove
         notifying_block do
+          link '/usr/local/sbin/redis-server' do
+            to redis_program
+            action :delete
+          end
 
+          link '/usr/local/sbin/redis-sentinel' do
+            to sentinel_program
+            action :delete
+          end
+
+          link '/usr/local/sbin/redis-cli' do
+            to cli_program
+            action :delete
+          end
+
+          directory redis_base do
+            recursive true
+            action :delete
+          end
         end
       end
 
       # @return [String]
       # @api private
+      def redis_base
+        options(:base, "/opt/redis/#{new_resource.version}")
+      end
+
+      # @return [String]
+      # @api private
       def redis_program
-        options(:program, '')
+        options(:program, ::File.join(redis_base, 'src', 'redis-server'))
+      end
+
+      # @return [String]
+      # @api private
+      def cli_program
+        options(:cli_program, ::File.join(redis_base, 'src', 'redis-cli'))
       end
 
       # @param [Chef::Resource] resource
