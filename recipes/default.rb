@@ -8,7 +8,9 @@ poise_service_user node['redis']['service_user'] do
   group node['redis']['service_group']
 end
 
-install = redis_installation node['redis']['service_name']
+install = redis_installation node['redis']['service_name'] do |r|
+  node['redis']['install'].each_pair { |k, v| r.send(k, v) } if node['redis']['install']
+end
 
 config = redis_config node['redis']['service_name'] do |r|
   owner node['redis']['service_owner']
