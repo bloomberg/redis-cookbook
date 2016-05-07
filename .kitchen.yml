@@ -18,3 +18,6 @@ platforms:
     named_run_list: redhat
 suites:
   - name: default
+  - name: sentinel
+    run_list:
+      - "recipe[redis::sentinel]"
