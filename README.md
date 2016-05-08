@@ -42,13 +42,49 @@ Redis database will be built from source.
 ``` ruby
 name 'redis'
 default_source :community
-cookbook 'redis', path: '.'
+cookbook 'redis', git: 'https://github.com/bloomberg/redis-cookbook'
 run_list 'redis::default'
 
 override['redis']['install']['provider'] = :archive
 override['redis']['redis']['artifact_url'] = "http://mirror.corporate.com/redis/redis-%{version}.tar.gz"
 ```
 
+In addition, you may find it useful to use the following Policyfile.rb
+for production deployment purposes. This follows a
+[post about how to tune Redis][4] and implements these settings using
+different (external) cookbooks. This policy can be deployed to the
+Chef Server using the `chef push production` command.
+
+``` ruby
+name 'redis'
+default_source :community
+cookbook 'redis', git: 'https://github.com/bloomberg/redis-cookbook'
+cookbook 'sysctl'
+cookbook 'ulimit'
+run_list 'ulimit::default', 'sysctl::params', 'redis::default'
+
+# @see http://shokunin.co/blog/2014/11/11/operational_redis.html
+# @see https://github.com/ziyasal/redisetup#system-side-settings
+override['redis']['config']['tcp_backlog'] = 65_535
+override['redis']['config']['maxclients'] = 10_000
+override['ulimit']['users']['redis']['filehandle_limit'] = 65_535
+override['sysctl']['params']['vm.overcommit_memory'] = 1
+override['sysctl']['params']['vm.swappiness'] = 0
+override['sysctl']['params']['net.ipv4.tcp_sack'] = 1
+override['sysctl']['params']['net.ipv4.tcp_timestamps'] = 1
+override['sysctl']['params']['net.ipv4.tcp_window_scaling'] = 1
+override['sysctl']['params']['net.ipv4.tcp_congestion_control'] = 'cubic'
+override['sysctl']['params']['net.ipv4.tcp_syncookies'] = 1
+override['sysctl']['params']['net.ipv4.tcp_tw_recycle'] = 1
+override['sysctl']['params']['net.ipv4.tcp_max_syn_backlog'] = 65_535
+override['sysctl']['params']['net.core.somaxconn'] = 65_535
+override['sysctl']['params']['net.core.rmem_max'] = 65_535
+override['sysctl']['params']['net.core.wmem_max'] = 65_535
+override['sysctl']['params']['fs.file-max'] = 65_535
+```
+
 [0]: http://blog.vialstudios.com/the-environment-cookbook-pattern#theapplicationcookbook
 [1]: http://redis.io/
 [2]: http://redis.io/topics/sentinel
+[3]: https://docs.chef.io/config_rb_policyfile.html
+[4]: http://shokunin.co/blog/2014/11/11/operational_redis.html
