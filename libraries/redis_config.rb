@@ -88,6 +88,12 @@ module RedisCookbook
       attribute(:client_output_buffer_limit, kind_of: [String, Array], default: ['normal 0 0 0', 'slave 256mb 64mb 60', 'pubsub 32mb 8mb 60'])
 
       action(:create) do
+        directory new_resource.log_dir do
+          owner new_resource.owner
+          group new_resource.group
+          recursive true
+        end
+
         template new_resource.path do
           source 'redis.conf.erb'
           owner new_resource.owner

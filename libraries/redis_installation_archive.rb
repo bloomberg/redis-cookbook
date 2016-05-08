@@ -22,7 +22,7 @@ module RedisCookbook
       # @return [Hash]
       # @api private
       def self.default_inversion_options(_node, resource)
-        super.merge(
+        super.merge(prefix: '/opt/redis',
           archive_url: "http://download.redis.io/releases/redis-%{version}.tar.gz",
           archive_checksum: default_archive_checksum(resource)
         )
@@ -33,35 +33,49 @@ module RedisCookbook
         notifying_block do
           include_recipe 'build-essential::default'
 
-          poise_archive ::File.basename(url) do
+          directory options[:prefix] do
+            recursive true
+          end
+
+          link '/usr/local/bin/redis-server' do
             action :nothing
-            destination redis_base
-            not_if { ::Dir.exist?(destination) }
+            to redis_program
+            only_if { ::File.exist?(redis_program) }
+          end
+
+          link '/usr/local/bin/redis-sentinel' do
+            action :nothing
+            to sentinel_program
+            only_if { ::File.exist?(sentinel_program) }
+          end
+
+          link '/usr/local/bin/redis-cli' do
+            action :nothing
+            to cli_program
+            only_if { ::File.exist?(cli_program) }
+          end
+
+          bash 'make-redis' do
+            action :nothing
+            cwd redis_base
+            code 'make'
             notifies :create, 'link[/usr/local/bin/redis-server]'
             notifies :create, 'link[/usr/local/bin/redis-sentinel]'
             notifies :create, 'link[/usr/local/bin/redis-cli]'
+          end
+
+          poise_archive ::File.basename(url) do
+            action :nothing
+            path ::File.join(Chef::Config[:file_cache_path], name)
+            destination redis_base
+            notifies :run, 'bash[make-redis]', :immediately
           end
 
           remote_file ::File.basename(url) do
             source url
             checksum options[:archive_checksum]
             path ::File.join(Chef::Config[:file_cache_path], name)
-            notifies :unpack, "poise_archive[#{name}]"
-          end
-
-          link '/usr/local/bin/redis-server' do
-            to redis_program
-            only_if { ::File.exist?(redis_program) }
-          end
-
-          link '/usr/local/bin/redis-sentinel' do
-            to sentinel_program
-            only_if { ::File.exist?(sentinel_program) }
-          end
-
-          link '/usr/local/bin/redis-cli' do
-            to cli_program
-            only_if { ::File.exist?(cli_program) }
+            notifies :unpack, "poise_archive[#{name}]", :immediately
           end
         end
       end
@@ -93,7 +107,7 @@ module RedisCookbook
       # @return [String]
       # @api private
       def redis_base
-        options(:base, "/opt/redis/#{new_resource.version}")
+        ::File.join(options[:prefix], new_resource.version)
       end
 
       # @return [String]

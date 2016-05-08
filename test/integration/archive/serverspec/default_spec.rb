@@ -22,3 +22,14 @@ describe file('/etc/redis.conf') do
   it { should be_owned_by 'redis' }
   it { should be_grouped_into 'redis' }
 end
+
+%w{redis-server redis-sentinel redis-cli}.each do |program|
+  describe file("/opt/redis/3.2.0/src/#{program}") do
+    it { should be_file }
+    it { should be_executable }
+  end
+
+  describe file("/usr/local/bin/#{program}") do
+    it { should be_linked_to "/opt/redis/3.2.0/src/#{program}" }
+  end
+end

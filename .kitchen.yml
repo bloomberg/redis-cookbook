@@ -27,6 +27,8 @@ platforms:
         enable_epel: true
 suites:
   - name: default
-  - name: sentinel
-    run_list:
-      - "recipe[redis::sentinel]"
+  - name: archive
+    attributes:
+      redis:
+        install:
+          provider: archive
