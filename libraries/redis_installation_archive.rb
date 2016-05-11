@@ -39,19 +39,16 @@ module RedisCookbook
           link '/usr/local/bin/redis-server' do
             action :nothing
             to redis_program
-            only_if { ::File.exist?(redis_program) }
           end
 
           link '/usr/local/bin/redis-sentinel' do
             action :nothing
             to sentinel_program
-            only_if { ::File.exist?(sentinel_program) }
           end
 
           link '/usr/local/bin/redis-cli' do
             action :nothing
             to cli_program
-            only_if { ::File.exist?(cli_program) }
           end
 
           bash 'make-redis' do
