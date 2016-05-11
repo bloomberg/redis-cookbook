@@ -23,13 +23,12 @@ module RedisCookbook
       # @api private
       def self.default_inversion_options(_node, resource)
         super.merge(prefix: '/opt/redis',
-          archive_url: "http://download.redis.io/releases/redis-%{version}.tar.gz",
-          archive_checksum: default_archive_checksum(resource)
-        )
+                    archive_url: 'http://download.redis.io/releases/redis-%{version}.tar.gz',
+                    archive_checksum: default_archive_checksum(resource))
       end
 
       def action_create
-        url = options[:archive_url] % {version: new_resource.version}
+        url = options[:archive_url] % { version: new_resource.version }
         notifying_block do
           include_recipe 'build-essential::default'
 
