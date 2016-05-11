@@ -19,14 +19,14 @@ daemonize no
 
 # Accept connections on the specified port, default is 6379.
 # If port 0 is specified Redis will not listen on a TCP socket.
-<% if @config.port  %>
-port <%= @config.port.to_s %>
+<% if @resource.port  %>
+port <%= @resource.port.to_s %>
 <% end %>
 
 # If you want you can bind a single interface, if the bind option is not
 # specified all the interfaces will listen for incoming connections.
-<% if @config.bind %>
-bind <%= @config.bind %>
+<% if @resource.bind %>
+bind <%= @resource.bind %>
 <% end %>
 
 # Specify the path for the unix socket that will be used to listen for
@@ -35,16 +35,16 @@ bind <%= @config.bind %>
 #
 # unixsocket /var/run/redis/redis.sock
 # unixsocketperm 755
-<% if @config.unixsocket %>
-unixsocket <%= @config.unixsocket %>
+<% if @resource.unixsocket %>
+unixsocket <%= @resource.unixsocket %>
 <% end %>
-<% if @config.unixsocketperm %>
-unixsocketperm <%= @config.unixsocketperm %>
+<% if @resource.unixsocketperm %>
+unixsocketperm <%= @resource.unixsocketperm %>
 <% end %>
 
 # Close the connection after a client is idle for N seconds (0 to disable)
-<% if @config.timeout %>
-timeout <%= @config.timeout %>
+<% if @resource.timeout %>
+timeout <%= @resource.timeout %>
 <% end %>
 
 # Set server verbosity to 'debug'
@@ -53,41 +53,41 @@ timeout <%= @config.timeout %>
 # verbose (many rarely useful info, but not a mess like the debug level)
 # notice (moderately verbose, what you want in production probably)
 # warning (only very important / critical messages are logged)
-<% if @config.loglevel %>
-loglevel <%= @config.loglevel %>
+<% if @resource.loglevel %>
+loglevel <%= @resource.loglevel %>
 <% end %>
 
 # Specify the log file name. Also 'stdout' can be used to force
 # Redis to log on the standard output. Note that if you use standard
 # output for logging but daemonize, logs will be sent to /dev/null
-<% if @config.logfile %>
-logfile <%= @config.logfile %>
+<% if @resource.logfile %>
+logfile <%= @resource.logfile %>
 <% end %>
 
 # To enable logging to the system logger, just set 'syslog-enabled' to yes,
 # and optionally update the other syslog parameters to suit your needs.
 # syslog-enabled no
-<% if @config.syslog_enabled %>
-syslog-enabled <%= @config.syslog_enabled %>
+<% if @resource.syslog_enabled %>
+syslog-enabled <%= @resource.syslog_enabled %>
 <% end %>
 
 # Specify the syslog identity.
 # syslog-ident redis
-<% if @config.syslog_ident %>
-syslog-ident <%= @config.syslog_ident %>
+<% if @resource.syslog_ident %>
+syslog-ident <%= @resource.syslog_ident %>
 <% end %>
 
 # Specify the syslog facility.  Must be USER or between LOCAL0-LOCAL7.
 # syslog-facility local0
-<% if @config.syslog_facility %>
-syslog-facility <%= @config.syslog_facility %>
+<% if @resource.syslog_facility %>
+syslog-facility <%= @resource.syslog_facility %>
 <% end %>
 
 # Set the number of databases. The default database is DB 0, you can select
 # a different one on a per-connection basis using SELECT <dbid> where
 # dbid is a number between 0 and 'databases'-1
-<% if @config.databases %>
-databases <%= @config.databases.to_s %>
+<% if @resource.databases %>
+databases <%= @resource.databases.to_s %>
 <% end %>
 
 ################################ SNAPSHOTTING  #################################
@@ -111,8 +111,8 @@ databases <%= @config.databases.to_s %>
 #   like in the following example:
 #
 #   save ""
-<% if @config.save %>
-  <% @config.save.each do |s| %>
+<% if @resource.save %>
+  <% @resource.save.each do |s| %>
 <%= "save #{s}" %>
   <% end %>
 <% end %>
@@ -130,16 +130,16 @@ databases <%= @config.databases.to_s %>
 # and persistence, you may want to disable this feature so that Redis will
 # continue to work as usually even if there are problems with disk,
 # permissions, and so forth.
-<% if @config.stop_writes_on_bgsave_error %>
-stop-writes-on-bgsave-error <%= @config.stop_writes_on_bgsave_error %>
+<% if @resource.stop_writes_on_bgsave_error %>
+stop-writes-on-bgsave-error <%= @resource.stop_writes_on_bgsave_error %>
 <% end %>
 
 # Compress string objects using LZF when dump .rdb databases?
 # For default that's set to 'yes' as it's almost always a win.
 # If you want to save some CPU in the saving child set it to 'no' but
 # the dataset will likely be bigger if you have compressible values or keys.
-<% if @config.rdbcompression %>
-rdbcompression <%= @config.rdbcompression %>
+<% if @resource.rdbcompression %>
+rdbcompression <%= @resource.rdbcompression %>
 <% end %>
 
 # Since verison 5 of RDB a CRC64 checksum is placed at the end of the file.
@@ -149,13 +149,13 @@ rdbcompression <%= @config.rdbcompression %>
 #
 # RDB files created with checksum disabled have a checksum of zero that will
 # tell the loading code to skip the check.
-<% if @config.rdbchecksum %>
-rdbchecksum <%= @config.rdbchecksum %>
+<% if @resource.rdbchecksum %>
+rdbchecksum <%= @resource.rdbchecksum %>
 <% end %>
 
 # The filename where to dump the DB
-<% if @config.dbfilename %>
-dbfilename <%= @config.dbfilename %>
+<% if @resource.dbfilename %>
+dbfilename <%= @resource.dbfilename %>
 <% end %>
 
 # The working directory.
@@ -166,8 +166,8 @@ dbfilename <%= @config.dbfilename %>
 # Also the Append Only File will be created inside this directory.
 #
 # Note that you must specify a directory here, not a file name.
-<% if @config.dir %>
-dir <%= @config.dir %>
+<% if @resource.dir %>
+dir <%= @resource.dir %>
 <% end %>
 
 ################################# REPLICATION #################################
@@ -178,13 +178,13 @@ dir <%= @config.dir %>
 # different interval, or to listen to another port, and so on.
 #
 # slaveof <masterip> <masterport>
-<% if @config.slaveof %>
-  <% if @config.slaveof.kind_of?(Array) %>
-      <% @config.slaveof.each do |s| %>
+<% if @resource.slaveof %>
+  <% if @resource.slaveof.kind_of?(Array) %>
+      <% @resource.slaveof.each do |s| %>
 <%= "slaveof #{s}" %>
       <% end %>
   <% else %>
-<%= "slaveof #{@config.slaveof}" %>
+<%= "slaveof #{@resource.slaveof}" %>
   <% end %>
 <% end %>
 
@@ -195,8 +195,8 @@ dir <%= @config.dir %>
 # refuse the slave request.
 #
 # masterauth <master-password>
-<% if @config.masterauth %>
-masterauth <%= @config.masterauth %>
+<% if @resource.masterauth %>
+masterauth <%= @resource.masterauth %>
 <% end %>
 
 # When a slave lost the connection with the master, or when the replication
@@ -210,8 +210,8 @@ masterauth <%= @config.masterauth %>
 #    an error "SYNC with master in progress" to all the kind of commands
 #    but to INFO and SLAVEOF.
 #
-<% if @config.slave_serve_stale_data %>
-slave-serve-stale-data <%= @config.slave_serve_stale_data %>
+<% if @resource.slave_serve_stale_data %>
+slave-serve-stale-data <%= @resource.slave_serve_stale_data %>
 <% end %>
 
 # You can configure a slave instance to accept writes or not. Writing against
@@ -228,8 +228,8 @@ slave-serve-stale-data <%= @config.slave_serve_stale_data %>
 # such as CONFIG, DEBUG, and so forth. To a limited extend you can improve
 # security of read only slaves using 'rename-command' to shadow all the
 # administrative / dangerous commands.
-<% if @config.slave_read_only %>
-slave-read-only <%= @config.slave_read_only %>
+<% if @resource.slave_read_only %>
+slave-read-only <%= @resource.slave_read_only %>
 <% end %>
 
 # Slaves send PINGs to server in a predefined interval. It's possible to change
@@ -237,8 +237,8 @@ slave-read-only <%= @config.slave_read_only %>
 # seconds.
 #
 # repl-ping-slave-period 10
-<% if @config.repl_ping_slave_period %>
-repl-ping-slave-period <%= @config.repl_ping_slave_period %>
+<% if @resource.repl_ping_slave_period %>
+repl-ping-slave-period <%= @resource.repl_ping_slave_period %>
 <% end %>
 
 # The following option sets a timeout for both Bulk transfer I/O timeout and
@@ -249,8 +249,8 @@ repl-ping-slave-period <%= @config.repl_ping_slave_period %>
 # every time there is low traffic between the master and the slave.
 #
 # repl-timeout 60
-<% if @config.repl_timeout %>
-repl-timeout <%= @config.repl_timeout %>
+<% if @resource.repl_timeout %>
+repl-timeout <%= @resource.repl_timeout %>
 <% end %>
 
 # The slave priority is an integer number published by Redis in the INFO output.
@@ -266,8 +266,8 @@ repl-timeout <%= @config.repl_timeout %>
 # Redis Sentinel for promotion.
 #
 # By default the priority is 100.
-<% if @config.slave_priority %>
-slave-priority <%= @config.slave_priority.to_s %>
+<% if @resource.slave_priority %>
+slave-priority <%= @resource.slave_priority.to_s %>
 <% end %>
 
 ################################## SECURITY ###################################
@@ -284,8 +284,8 @@ slave-priority <%= @config.slave_priority.to_s %>
 # use a very strong password otherwise it will be very easy to break.
 #
 # requirepass foobared
-<% if @config.requirepass %>
-requirepass <%= @config.requirepass %>
+<% if @resource.requirepass %>
+requirepass <%= @resource.requirepass %>
 <% end %>
 # Command renaming.
 #
@@ -315,8 +315,8 @@ requirepass <%= @config.requirepass %>
 # an error 'max number of clients reached'.
 #
 # maxclients 10000
-<% if @config.maxclients %>
-maxclients <%= @config.maxclients %>
+<% if @resource.maxclients %>
+maxclients <%= @resource.maxclients %>
 <% end %>
 # Don't use more memory than the specified amount of bytes.
 # When the memory limit is reached Redis will try to remove keys
@@ -341,8 +341,8 @@ maxclients <%= @config.maxclients %>
 # limit for maxmemory so that there is some free RAM on the system for slave
 # output buffers (but this is not needed if the policy is 'noeviction').
 #
-<% if @config.maxmemory %>
-maxmemory <%= @config.maxmemory %>
+<% if @resource.maxmemory %>
+maxmemory <%= @resource.maxmemory %>
 <% end %>
 
 # MAXMEMORY POLICY: how Redis will select what to remove when maxmemory
@@ -367,8 +367,8 @@ maxmemory <%= @config.maxmemory %>
 # The default is:
 #
 # maxmemory-policy volatile-lru
-<% if @config.maxmemory_policy %>
-maxmemory-policy <%= @config.maxmemory_policy %>
+<% if @resource.maxmemory_policy %>
+maxmemory-policy <%= @resource.maxmemory_policy %>
 <% end %>
 
 # LRU and minimal TTL algorithms are not precise algorithms but approximated
@@ -378,8 +378,8 @@ maxmemory-policy <%= @config.maxmemory_policy %>
 # using the following configuration directive.
 #
 # maxmemory-samples 3
-<% if @config.memory_samples %>
-memory-samples <%= @config.memory_samples %>
+<% if @resource.memory_samples %>
+memory-samples <%= @resource.memory_samples %>
 <% end %>
 
 ############################## APPEND ONLY MODE ###############################
@@ -401,14 +401,14 @@ memory-samples <%= @config.memory_samples %>
 # with the better durability guarantees.
 #
 # Please check http://redis.io/topics/persistence for more information.
-<% if @config.appendonly %>
-appendonly <%= @config.appendonly %>
+<% if @resource.appendonly %>
+appendonly <%= @resource.appendonly %>
 <% end %>
 
 # The name of the append only file (default: "appendonly.aof")
 # appendfilename appendonly.aof
-<% if @config.appendfilename %>
-appendfilename <%= @config.appendfilename %>
+<% if @resource.appendfilename %>
+appendfilename <%= @resource.appendfilename %>
 <% end %>
 
 # The fsync() call tells the Operating System to actually write data on disk
@@ -435,8 +435,8 @@ appendfilename <%= @config.appendfilename %>
 # If unsure, use "everysec".
 
 # appendfsync always
-<% if @config.appendfsync %>
-appendfsync <%= @config.appendfsync %>
+<% if @resource.appendfsync %>
+appendfsync <%= @resource.appendfsync %>
 <% end %>
 # appendfsync no
 
@@ -458,8 +458,8 @@ appendfsync <%= @config.appendfsync %>
 #
 # If you have latency problems turn this to "yes". Otherwise leave it as
 # "no" that is the safest pick from the point of view of durability.
-<% if @config.no_appendfsync_on_rewrite %>
-no-appendfsync-on-rewrite <%= @config.no_appendfsync_on_rewrite %>
+<% if @resource.no_appendfsync_on_rewrite %>
+no-appendfsync-on-rewrite <%= @resource.no_appendfsync_on_rewrite %>
 <% end %>
 
 # Automatic rewrite of the append only file.
@@ -478,11 +478,11 @@ no-appendfsync-on-rewrite <%= @config.no_appendfsync_on_rewrite %>
 #
 # Specify a percentage of zero in order to disable the automatic AOF
 # rewrite feature.
-<% if @config.auto_aof_rewrite_percentage %>
-auto-aof-rewrite-percentage <%= @config.auto_aof_rewrite_percentage.to_s %>
+<% if @resource.auto_aof_rewrite_percentage %>
+auto-aof-rewrite-percentage <%= @resource.auto_aof_rewrite_percentage.to_s %>
 <% end %>
-<% if @config.auto_aof_rewrite_min_size %>
-auto-aof-rewrite-min-size <%= @config.auto_aof_rewrite_min_size.to_s %>mb
+<% if @resource.auto_aof_rewrite_min_size %>
+auto-aof-rewrite-min-size <%= @resource.auto_aof_rewrite_min_size.to_s %>mb
 <% end %>
 
 ################################ LUA SCRIPTING  ###############################
@@ -501,8 +501,8 @@ auto-aof-rewrite-min-size <%= @config.auto_aof_rewrite_min_size.to_s %>mb
 # termination of the script.
 #
 # Set it to 0 or a negative value for unlimited execution without warnings.
-<% if @config.lua_time_limit %>
-lua-time-limit <%= @config.lua_time_limit.to_s %>
+<% if @resource.lua_time_limit %>
+lua-time-limit <%= @resource.lua_time_limit.to_s %>
 <% end %>
 
 ################################## SLOW LOG ###################################
@@ -523,14 +523,14 @@ lua-time-limit <%= @config.lua_time_limit.to_s %>
 # The following time is expressed in microseconds, so 1000000 is equivalent
 # to one second. Note that a negative number disables the slow log, while
 # a value of zero forces the logging of every command.
-<% if @config.slowlog_log_slower_than %>
-slowlog-log-slower-than <%= @config.slowlog_log_slower_than.to_s %>
+<% if @resource.slowlog_log_slower_than %>
+slowlog-log-slower-than <%= @resource.slowlog_log_slower_than.to_s %>
 <% end %>
 
 # There is no limit to this length. Just be aware that it will consume memory.
 # You can reclaim memory used by the slow log with SLOWLOG RESET.
-<% if @config.slowlog_max_len %>
-slowlog-max-len <%= @config.slowlog_max_len.to_s %>
+<% if @resource.slowlog_max_len %>
+slowlog-max-len <%= @resource.slowlog_max_len.to_s %>
 <% end %>
 
 ############################### ADVANCED CONFIG ###############################
@@ -538,21 +538,21 @@ slowlog-max-len <%= @config.slowlog_max_len.to_s %>
 # Hashes are encoded using a memory efficient data structure when they have a
 # small number of entries, and the biggest entry does not exceed a given
 # threshold. These thresholds can be configured using the following directives.
-<% if @config.hash_max_ziplist_entries %>
-hash-max-ziplist-entries <%= @config.hash_max_ziplist_entries.to_s %>
+<% if @resource.hash_max_ziplist_entries %>
+hash-max-ziplist-entries <%= @resource.hash_max_ziplist_entries.to_s %>
 <% end %>
-<% if @config.hash_max_ziplist_value %>
-hash-max-ziplist-value <%= @config.hash_max_ziplist_value.to_s %>
+<% if @resource.hash_max_ziplist_value %>
+hash-max-ziplist-value <%= @resource.hash_max_ziplist_value.to_s %>
 <% end %>
 
 # Similarly to hashes, small lists are also encoded in a special way in order
 # to save a lot of space. The special representation is only used when
 # you are under the following limits:
-<% if @config.list_max_ziplist_entries %>
-list-max-ziplist-entries <%= @config.list_max_ziplist_entries.to_s %>
+<% if @resource.list_max_ziplist_entries %>
+list-max-ziplist-entries <%= @resource.list_max_ziplist_entries.to_s %>
 <% end %>
-<% if @config.list_max_ziplist_value %>
-list-max-ziplist-value <%= @config.list_max_ziplist_value.to_s %>
+<% if @resource.list_max_ziplist_value %>
+list-max-ziplist-value <%= @resource.list_max_ziplist_value.to_s %>
 <% end %>
 
 # Sets have a special encoding in just one case: when a set is composed
@@ -560,18 +560,18 @@ list-max-ziplist-value <%= @config.list_max_ziplist_value.to_s %>
 # of 64 bit signed integers.
 # The following configuration setting sets the limit in the size of the
 # set in order to use this special memory saving encoding.
-<% if @config.set_max_intset_entries %>
-set-max-intset-entries <%= @config.set_max_intset_entries.to_s %>
+<% if @resource.set_max_intset_entries %>
+set-max-intset-entries <%= @resource.set_max_intset_entries.to_s %>
 <% end %>
 
 # Similarly to hashes and lists, sorted sets are also specially encoded in
 # order to save a lot of space. This encoding is only used when the length and
 # elements of a sorted set are below the following limits:
-<% if @config.zset_max_ziplist_entries %>
-zset-max-ziplist-entries <%= @config.zset_max_ziplist_entries.to_s %>
+<% if @resource.zset_max_ziplist_entries %>
+zset-max-ziplist-entries <%= @resource.zset_max_ziplist_entries.to_s %>
 <% end %>
-<% if @config.zet_max_ziplist_value %>
-zset-max-ziplist-value <%= @config.zet_max_ziplist_value.to_s %>
+<% if @resource.zet_max_ziplist_value %>
+zset-max-ziplist-value <%= @resource.zet_max_ziplist_value.to_s %>
 <% end %>
 
 # Active rehashing uses 1 millisecond every 100 milliseconds of CPU time in
@@ -592,8 +592,8 @@ zset-max-ziplist-value <%= @config.zet_max_ziplist_value.to_s %>
 #
 # use "activerehashing yes" if you don't have such hard requirements but
 # want to free memory asap when possible.
-<% if @config.activerehashing %>
-activerehashing <%= @config.activerehashing %>
+<% if @resource.activerehashing %>
+activerehashing <%= @resource.activerehashing %>
 <% end %>
 
 # The client output buffer limits can be used to force disconnection of clients
@@ -629,21 +629,8 @@ activerehashing <%= @config.activerehashing %>
 # subscribers and slaves receive data in a push fashion.
 #
 # Both the hard or the soft limit can be disabled just setting it to zero.
-<% if @config.client_output_buffer_limit %>
-  <% @config.client_output_buffer_limit.each do |c| %>
-   <%= "client-output-buffer-limit #{c}" %>
-  <% end %>
-<% end %>
-
-################################## INCLUDES ###################################
-
-# Include one or more other config files here.  This is useful if you
-# have a standard template that goes to all Redis server but also need
-# to customize a few per-server settings.  Include files can include
-# other files, so use this wisely.
-#
-<% if @config.include %>
-  <% @include.each do |i| %>
-<%= "include #{i}" %>
+<% if @resource.client_output_buffer_limit %>
+  <% @resource.client_output_buffer_limit.each do |c| %>
+<%= "client-output-buffer-limit #{c}" %>
   <% end %>
 <% end %>

@@ -1,68 +1,90 @@
-# Redis Server Cookbook
+# Redis Cookbook
+[![Build Status](https://img.shields.io/travis/bloomberg/redis-cookbook.svg)](https://travis-ci.org/bloomberg/redis-cookbook)
+[![Code Quality](https://img.shields.io/codeclimate/github/bloomberg/redis-cookbook.svg)](https://codeclimate.com/github/bloomberg/redis-cookbook)
+[![Test Coverage](https://codeclimate.com/github/bloomberg/redis-cookbook/badges/coverage.svg)](https://codeclimate.com/github/bloomberg/redis-cookbook/coverage)
+[![Cookbook Version](https://img.shields.io/cookbook/v/nrpe-ng.svg)](https://supermarket.chef.io/cookbooks/nrpe-ng)
 [![License](https://img.shields.io/badge/license-Apache_2-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 
-[Application cookbook][0] which installs and configures the [redis-server][1] monitoring daemon. Currently it defaults to ubuntu. 
+[Application cookbook][0] which installs and configures the [Redis][1]
+key-value database and [Redis Sentinel][2] which provides
+high-availability for the database.
 
-## Usage
-### Supports
-- Ubuntu
+## Platforms
+The following platforms are tested using [Test Kitchen][1]:
 
-### Dependencies
-| Name | Description |
-|------|-------------|
-| [poise][2] | [Library cookbook][4] built to aide in writing reusable cookbooks. |
-| [poise-service][3] | [Library cookbook][4] built to abstract service management. |
+- Ubuntu 12.04/14.04/16.04
+- CentOS (RHEL) 5/6/7
 
-### Attributes
-All attributes are built directly into the resource and most if not all have default settings attached(same that come packaged with redi    s). You can view all default attributes here [Attributes][5]. I did this attributes this way to give the user full range of tuning and tweaking every setting that redis comes with. IMO it is a better approach for this service over using a gigantic hash.
+## Basic Usage
+The [default recipe](recipes/default.rb) installs and configures the
+Redis database. The
+[install resource](libraries/redis_installation.rb) will use the
+[package install provider](libraries/redis_installation_package.rb)
+for the node's operating system. The configuration of the database is
+managed through the [config resource](libraries/redis_config.rb) which
+can be tuned with node attributes.
 
-### Resources/Providers
+Additionally, there is a [sentinel recipe](recipes/sentinel.rb) which
+installs and configures Redis Sentinel. It installs Sentinel using the
+same installation provider mechanism as the default resource.
 
-#### redis_instance
-The most basic approach to get all of the default redis settings is here:
+## Advanced Usage
+The [installation resource](libraries/redis_installation.rb)
+attributes are able to be tuned easily; for deployments we suggest
+using [Chef Policyfiles][3]. An [example policyfile](Policyfile.rb) is
+used for configuring Test Kitchen.
 
-```ruby
-redis_instance "redis"
+Let's consider a common need for enterprise networks to mirror files
+internally because they are unable to go out to the Internet. Using
+the [archive provider](libraries/redis_installation_archive.rb) the
+Redis database will be built from source.
+
+``` ruby
+name 'redis'
+default_source :community
+cookbook 'redis', git: 'https://github.com/bloomberg/redis-cookbook'
+run_list 'redis::default'
+
+override['redis']['install']['provider'] = :archive
+override['redis']['redis']['artifact_url'] = "http://mirror.corporate.com/redis/redis-%{version}.tar.gz"
 ```
 
-You have the ability to tune everything and anything redis. You simply have to pass the attribute name like so:
+In addition, you may find it useful to use the following Policyfile.rb
+for production deployment purposes. This follows a
+[post about how to tune Redis][4] and implements these settings using
+different (external) cookbooks. This policy can be deployed to the
+Chef Server using the `chef push production` command.
 
-```ruby
-redis_instance "redis" do
-  bind "172.16.10.10"
-end
-```
+``` ruby
+name 'redis'
+default_source :community
+cookbook 'redis', git: 'https://github.com/bloomberg/redis-cookbook'
+cookbook 'sysctl'
+cookbook 'ulimit'
+run_list 'ulimit::default', 'sysctl::params', 'redis::default'
 
-You have the ability to enable sentinel with the below block.
-```ruby
-redis_instance "redis" do
-  sentinel true
-end
-```
-
-License & Authors
------------------
-- Author:: Anthony Caiafa (<acaiafa1@bloomberg.net>)
-
-```text
-Copyright 2015 Bloomberg Finance L.P.
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+# @see http://shokunin.co/blog/2014/11/11/operational_redis.html
+# @see https://github.com/ziyasal/redisetup#system-side-settings
+override['redis']['config']['tcp_backlog'] = 65_535
+override['redis']['config']['maxclients'] = 10_000
+override['ulimit']['users']['redis']['filehandle_limit'] = 65_535
+override['sysctl']['params']['vm.overcommit_memory'] = 1
+override['sysctl']['params']['vm.swappiness'] = 0
+override['sysctl']['params']['net.ipv4.tcp_sack'] = 1
+override['sysctl']['params']['net.ipv4.tcp_timestamps'] = 1
+override['sysctl']['params']['net.ipv4.tcp_window_scaling'] = 1
+override['sysctl']['params']['net.ipv4.tcp_congestion_control'] = 'cubic'
+override['sysctl']['params']['net.ipv4.tcp_syncookies'] = 1
+override['sysctl']['params']['net.ipv4.tcp_tw_recycle'] = 1
+override['sysctl']['params']['net.ipv4.tcp_max_syn_backlog'] = 65_535
+override['sysctl']['params']['net.core.somaxconn'] = 65_535
+override['sysctl']['params']['net.core.rmem_max'] = 65_535
+override['sysctl']['params']['net.core.wmem_max'] = 65_535
+override['sysctl']['params']['fs.file-max'] = 65_535
 ```
 
 [0]: http://blog.vialstudios.com/the-environment-cookbook-pattern#theapplicationcookbook
 [1]: http://redis.io/
-[2]: https://github.com/poise/poise
-[3]: https://github.com/poise/poise-service
-[4]: http://blog.vialstudios.com/the-environment-cookbook-pattern#thelibrarycookbook
-[5]: libraries/redis_instance.rb
+[2]: http://redis.io/topics/sentinel
+[3]: https://docs.chef.io/config_rb_policyfile.html
+[4]: http://shokunin.co/blog/2014/11/11/operational_redis.html

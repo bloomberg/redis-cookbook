@@ -157,7 +157,7 @@ sentinel notification-script <%= @config.sentinel_master_name %> <%= @config.sen
 #
 # The following arguments are passed to the script:
 #
-# <%= @config.sentinel_master_name %> <role> <state> <from-ip> <from-port> <to-ip> <to-port>
+# <%= @resource.sentinel_master_name %> <role> <state> <from-ip> <from-port> <to-ip> <to-port>
 #
 # <state> is currently always "failover"
 # <role> is either "leader" or "observer"
@@ -170,6 +170,6 @@ sentinel notification-script <%= @config.sentinel_master_name %> <%= @config.sen
 #
 # Example:
 #
-<% if @config.sentinel_client_reconfig %>
-sentinel client-reconfig-script <%= @config.sentinel_master_name %> <%= @config.sentinel_client_reconfig %>
+<% if @resource.sentinel_client_reconfig %>
+sentinel client-reconfig-script <%= @resource.sentinel_master_name %> <%= @resource.sentinel_client_reconfig %>
 <% end %>

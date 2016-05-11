@@ -12,16 +12,15 @@ install = redis_installation node['redis']['service_name'] do |r|
   node['redis']['install'].each_pair { |k, v| r.send(k, v) } if node['redis']['install']
 end
 
-config = redis_config node['redis']['service_name'] do |r|
+config = redis_sentinel_config node['redis']['sentinel']['service_name'] do |r|
   owner node['redis']['service_owner']
   group node['redis']['service_group']
-  node['redis']['config'].each_pair { |k, v| r.send(k, v) }
+  node['redis']['sentinel']['config'].each_pair { |k, v| r.send(k, v) }
 end
 
-redis_instance node['redis']['service_name'] do
-  directory config.dir
+redis_instance node['redis']['sentinel']['service_name'] do
   config_file config.path
-  program install.redis_program
+  program install.sentinel_program
 
   user node['redis']['service_user']
   group node['redis']['service_group']
