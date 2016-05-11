@@ -40,7 +40,7 @@ module RedisCookbook
       attribute(:sentinel_master_name, kind_of: String, default: 'mymaster')
       attribute(:sentinel_monitor, kind_of: String, default: '127.0.0.1 6379 2')
       attribute(:sentinel_auth, kind_of: String, default: 'changeme')
-      attribute(:sentinel_down, kind_of: Integer, default: '30000')
+      attribute(:sentinel_down, kind_of: Integer, default: 30_000)
       attribute(:sentinel_parallel, kind_of: Integer, default: 1)
       attribute(:sentinel_failover, kind_of: Integer, default: 180_000)
       attribute(:sentinel_notification, kind_of: [String, NilClass], default: nil)
