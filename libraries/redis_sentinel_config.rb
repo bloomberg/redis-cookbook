@@ -34,6 +34,12 @@ module RedisCookbook
       # @!attribute instance_name
       # @return [String]
       attribute(:instance_name, kind_of: String, name_attribute: true)
+      # @!attribute logfile
+      # @return [String]
+      attribute(:logfile, kind_of: String, default: lazy { "/var/log/redis/#{instance_name}.log" })
+      # @!attribute directory
+      # @return [String]
+      attribute(:directory, kind_of: String, default: lazy { "/var/lib/redis/#{instance_name}" })
 
       # @see: https://github.com/antirez/redis/blob/3.2/sentinel.conf
       attribute(:sentinel_port, kind_of: Integer, default: 26_379)
@@ -47,6 +53,12 @@ module RedisCookbook
       attribute(:sentinel_client_reconfig, kind_of: [String, NilClass], default: nil)
 
       action(:create) do
+        directory ::File.dirname(new_resource.logfile) do
+          owner new_resource.owner
+          group new_resource.group
+          recursive true
+        end
+
         template new_resource.path do
           source 'sentinel.conf.erb'
           owner new_resource.owner

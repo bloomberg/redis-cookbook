@@ -19,7 +19,7 @@ config = redis_config node['redis']['service_name'] do |r|
 end
 
 redis_instance node['redis']['service_name'] do
-  directory config.dir
+  directory config.directory
   config_file config.path
   program install.redis_program
 
