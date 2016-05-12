@@ -2,8 +2,8 @@
 
 # port <sentinel-port>
 # The port that this sentinel instance will run on
-<% if @config.sentinel_port %>
-port <%= @config.sentinel_port %>
+<% if @resource.sentinel_port %>
+port <%= @resource.sentinel_port %>
 <% end %>
 
 # dir <working-directory>
@@ -11,18 +11,18 @@ port <%= @config.sentinel_port %>
 # For Redis Sentinel to chdir to /tmp at startup is the simplest thing
 # for the process to don't interfere with administrative tasks such as
 # unmounting filesystems.
-<% if @config.dir %>
-dir <%= @config.dir %>
+<% if @resource.dir %>
+dir <%= @resource.dir %>
 <% end %>
 
 # Specify the log file name. Also 'stdout' can be used to force
 # Redis to log on the standard output. Note that if you use standard
 # output for logging but daemonize, logs will be sent to /dev/null
-<% if @config.logfile %>
-logfile <%= @config.logfile %>
+<% if @resource.logfile %>
+logfile <%= @resource.logfile %>
 <% end %>
 
-# sentinel monitor <%= @config.sentinel_master_name %> <ip> <redis-port> <quorum>
+# sentinel monitor <%= @resource.sentinel_master_name %> <ip> <redis-port> <quorum>
 #
 # Tells Sentinel to monitor this master, and to consider it in O_DOWN
 # (Objectively Down) state only if at least <quorum> sentinels agree.
@@ -33,11 +33,11 @@ logfile <%= @config.logfile %>
 #
 # Note: master name should not include special characters or spaces.
 # The valid charset is A-z 0-9 and the three characters ".-_".
-<% if @config.sentinel_monitor %>
-sentinel monitor <%= @config.sentinel_master_name %> <%= @config.sentinel_monitor %>
+<% if @resource.sentinel_monitor %>
+sentinel monitor <%= @resource.sentinel_master_name %> <%= @resource.sentinel_monitor %>
 <% end %>
 
-# sentinel auth-pass <%= @config.sentinel_master_name %> <password>
+# sentinel auth-pass <%= @resource.sentinel_master_name %> <password>
 #
 # Set the password to use to authenticate with the master and slaves.
 # Useful if there is a password set in the Redis instances to monitor.
@@ -54,11 +54,11 @@ sentinel monitor <%= @config.sentinel_master_name %> <%= @config.sentinel_monito
 #
 # Example:
 #
-<% if @config.sentinel_auth %>
-sentinel auth-pass <%= @config.sentinel_master_name %> <%= @config.sentinel_auth %>
+<% if @resource.sentinel_auth %>
+sentinel auth-pass <%= @resource.sentinel_master_name %> <%= @resource.sentinel_auth %>
 <% end %>
 
-# sentinel down-after-milliseconds <%= @config.sentinel_master_name %> <milliseconds>
+# sentinel down-after-milliseconds <%= @resource.sentinel_master_name %> <milliseconds>
 #
 # Number of milliseconds the master (or any attached slave or sentinel) should
 # be unreachable (as in, not acceptable reply to PING, continuously, for the
@@ -66,20 +66,20 @@ sentinel auth-pass <%= @config.sentinel_master_name %> <%= @config.sentinel_auth
 # Down).
 #
 # Default is 30 seconds.
-<% if @config.sentinel_down %>
-sentinel down-after-milliseconds <%= @config.sentinel_master_name %> <%= @config.sentinel_down %>
+<% if @resource.sentinel_down %>
+sentinel down-after-milliseconds <%= @resource.sentinel_master_name %> <%= @resource.sentinel_down %>
 <% end %>
 
-# sentinel parallel-syncs <%= @config.sentinel_master_name %> <numslaves>
+# sentinel parallel-syncs <%= @resource.sentinel_master_name %> <numslaves>
 #
-# How many slaves we can reconfigure to point to the new slave simultaneously
+# How many slaves we can configure to point to the new slave simultaneously
 # during the failover. Use a low number if you use the slaves to serve query
 # to avoid that all the slaves will be unreachable at about the same
 # time while performing the synchronization with the master.
-<% if @config.sentinel_parallel %>
-sentinel parallel-syncs <%= @config.sentinel_master_name %> <%= @config.sentinel_parallel %>
+<% if @resource.sentinel_parallel %>
+sentinel parallel-syncs <%= @resource.sentinel_master_name %> <%= @resource.sentinel_parallel %>
 <% end %>
-# sentinel failover-timeout <%= @config.sentinel_master_name %> <milliseconds>
+# sentinel failover-timeout <%= @resource.sentinel_master_name %> <milliseconds>
 #
 # Specifies the failover timeout in milliseconds. It is used in many ways:
 #
@@ -102,8 +102,8 @@ sentinel parallel-syncs <%= @config.sentinel_master_name %> <%= @config.sentinel
 #   the exact parallel-syncs progression as specified.
 #
 # Default is 3 minutes.
-<% if @config.sentinel_failover %>
-sentinel failover-timeout <%= @config.sentinel_master_name %> <%= @config.sentinel_failover %>
+<% if @resource.sentinel_failover %>
+sentinel failover-timeout <%= @resource.sentinel_master_name %> <%= @resource.sentinel_failover %>
 <% end %>
 
 # SCRIPTS EXECUTION
@@ -127,7 +127,7 @@ sentinel failover-timeout <%= @config.sentinel_master_name %> <%= @config.sentin
 
 # NOTIFICATION SCRIPT
 #
-# sentinel notification-script <%= @config.sentinel_master_name %> <script-path>
+# sentinel notification-script <%= @resource.sentinel_master_name %> <script-path>
 #
 # Call the specified notification script for any sentinel event that is
 # generated in the WARNING level (for instance -sdown, -odown, and so forth).
@@ -143,13 +143,13 @@ sentinel failover-timeout <%= @config.sentinel_master_name %> <%= @config.sentin
 #
 # Example:
 #
-<% if @config.sentinel_notification %>
-sentinel notification-script <%= @config.sentinel_master_name %> <%= @config.sentinel_notification %>
+<% if @resource.sentinel_notification %>
+sentinel notification-script <%= @resource.sentinel_master_name %> <%= @resource.sentinel_notification %>
 <% end %>
 
 # CLIENTS RECONFIGURATION SCRIPT
 #
-# sentinel client-reconfig-script <%= @config.sentinel_master_name %> <script-path>
+# sentinel client-reconfig-script <%= @resource.sentinel_master_name %> <script-path>
 #
 # When the master changed because of a failover a script can be called in
 # order to perform application-specific tasks to notify the clients that the
