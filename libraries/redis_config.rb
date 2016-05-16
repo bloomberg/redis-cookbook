@@ -34,9 +34,12 @@ module RedisCookbook
       # @!attribute instance_name
       # @return [String]
       attribute(:instance_name, kind_of: String, name_attribute: true)
-      # @!attribute log_dir
+      # @!attribute logfile
       # @return [String]
-      attribute(:log_dir, kind_of: String, default: '/var/log/redis')
+      attribute(:logfile, kind_of: String, default: lazy { "/var/log/redis/#{instance_name}.log" })
+      # @!attribute directory
+      # @return [String]
+      attribute(:directory, kind_of: String, default: lazy { "/var/lib/redis/#{instance_name}" })
 
       # @see: https://github.com/antirez/redis/blob/3.2/redis.conf
       attribute(:port, kind_of: Integer, default: 6_379)
@@ -48,13 +51,11 @@ module RedisCookbook
       attribute(:syslog_enabled, kind_of: [String, NilClass], default: nil)
       attribute(:syslog_ident, kind_of: [String, NilClass], default: nil)
       attribute(:syslog_facility, kind_of: [String, NilClass], default: nil)
-      attribute(:logfile, kind_of: String, default: lazy { ::File.join(log_dir, "#{instance_name}.log") })
       attribute(:databases, kind_of: Integer, default: 16)
       attribute(:save, kind_of: [String, Array], default: ['900 1', '300 10', '60 10000'])
       attribute(:stop_writes_on_bgsave_error, equal_to: %w{yes no}, default: 'yes')
       attribute(:rdbcompression, equal_to: %w{yes no}, default: 'yes')
       attribute(:rdbchecksum, equal_to: %w{yes no}, default: 'yes')
-      attribute(:dir, kind_of: String, default: lazy { "/var/lib/redis/#{instance_name}" })
       attribute(:slaveof, kind_of: [String, Array, NilClass], default: nil)
       attribute(:masterauth, kind_of: [String, NilClass], default: nil)
       attribute(:slave_serve_stale_data, equal_to: %w{yes no}, default: 'yes')
@@ -88,7 +89,7 @@ module RedisCookbook
       attribute(:client_output_buffer_limit, kind_of: [String, Array], default: ['normal 0 0 0', 'slave 256mb 64mb 60', 'pubsub 32mb 8mb 60'])
 
       action(:create) do
-        directory new_resource.log_dir do
+        directory ::File.dirname(new_resource.logfile) do
           owner new_resource.owner
           group new_resource.group
           recursive true

@@ -11,8 +11,8 @@ port <%= @resource.sentinel_port %>
 # For Redis Sentinel to chdir to /tmp at startup is the simplest thing
 # for the process to don't interfere with administrative tasks such as
 # unmounting filesystems.
-<% if @resource.dir %>
-dir <%= @resource.dir %>
+<% if @resource.directory %>
+dir <%= @resource.directory %>
 <% end %>
 
 # Specify the log file name. Also 'stdout' can be used to force

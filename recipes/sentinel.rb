@@ -19,6 +19,7 @@ config = redis_sentinel_config node['redis']['sentinel']['service_name'] do |r|
 end
 
 redis_instance node['redis']['sentinel']['service_name'] do
+  directory config.directory
   config_file config.path
   program install.sentinel_program
 

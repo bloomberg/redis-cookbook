@@ -20,7 +20,7 @@ daemonize no
 # Accept connections on the specified port, default is 6379.
 # If port 0 is specified Redis will not listen on a TCP socket.
 <% if @resource.port  %>
-port <%= @resource.port.to_s %>
+port <%= @resource.port %>
 <% end %>
 
 # If you want you can bind a single interface, if the bind option is not
@@ -166,8 +166,8 @@ dbfilename <%= @resource.dbfilename %>
 # Also the Append Only File will be created inside this directory.
 #
 # Note that you must specify a directory here, not a file name.
-<% if @resource.dir %>
-dir <%= @resource.dir %>
+<% if @resource.directory %>
+dir <%= @resource.directory %>
 <% end %>
 
 ################################# REPLICATION #################################
