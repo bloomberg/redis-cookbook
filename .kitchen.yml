@@ -28,7 +28,8 @@ platforms:
 suites:
   - name: default
   - name: sentinel
-    policyfile_path: test/fixtures/policies/sentinel.rb
+    provisioner:
+      policyfile_path: test/fixtures/policies/sentinel.rb
   - name: archive
     attributes:
       redis:

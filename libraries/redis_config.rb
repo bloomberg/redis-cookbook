@@ -29,7 +29,7 @@ module RedisCookbook
       attribute(:group, kind_of: String, default: 'redis')
       # @!attribute mode
       # @return [String]
-      attribute(:mode, kind_of: String, default: '0440')
+      attribute(:mode, kind_of: String, default: '0640')
 
       # @!attribute instance_name
       # @return [String]
