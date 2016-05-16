@@ -27,6 +27,9 @@ platforms:
         enable_epel: true
 suites:
   - name: default
+  - name: sentinel
+    provisioner:
+      policyfile_path: test/fixtures/policies/sentinel.rb
   - name: archive
     attributes:
       redis:
