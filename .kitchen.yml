@@ -12,19 +12,10 @@ platforms:
     named_run_list: ubuntu
   - name: centos-7.2
     named_run_list: redhat
-    attributes:
-      redhat:
-        enable_epel: true
   - name: centos-6.7
     named_run_list: redhat
-    attributes:
-      redhat:
-        enable_epel: true
   - name: centos-5.11
     named_run_list: redhat
-    attributes:
-      redhat:
-        enable_epel: true
 suites:
   - name: default
   - name: sentinel
