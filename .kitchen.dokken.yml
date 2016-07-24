@@ -21,7 +21,7 @@ platforms:
         - RUN yum -y install lsof which systemd-sysv initscripts sudo
     attributes:
       poise-service:
-        consul:
+        redis:
           provider: systemd
   - name: centos-6
     named_run_list: centos
@@ -41,7 +41,7 @@ platforms:
         - RUN /usr/bin/apt-get install sudo -y
     attributes:
       poise-service:
-        consul:
+        redis:
           provider: systemd
   - name: ubuntu-14.04
     named_run_list: debian
@@ -69,7 +69,7 @@ platforms:
         - RUN /usr/bin/apt-get install lsb-release sudo -y
     attributes:
       poise-service:
-        consul:
+        redis:
           provider: systemd
   - name: debian-7
     named_run_list: debian
