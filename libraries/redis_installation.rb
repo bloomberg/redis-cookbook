@@ -23,7 +23,7 @@ module RedisCookbook
       # @!attribute version
       # The version of Redis to install.
       # @return [String]
-      attribute(:version, kind_of: [String, NilClass], default: '3.2.0')
+      attribute(:version, kind_of: String)
 
       # @return [String]
       def redis_program

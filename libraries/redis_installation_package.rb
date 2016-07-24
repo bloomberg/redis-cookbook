@@ -123,6 +123,7 @@ module RedisCookbook
           end
         when 'freebsd'
           case node.platform_version.to_i
+          when 9 then '3.0.7'
           when 10 then '3.0.7'
           end
         end
