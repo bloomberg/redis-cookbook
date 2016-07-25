@@ -5,6 +5,7 @@
 # Copyright 2015-2016, Bloomberg Finance L.P.
 #
 poise_service_user node['redis']['service_user'] do
+  shell '/bin/bash'
   group node['redis']['service_group']
 end
 
