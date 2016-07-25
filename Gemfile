@@ -6,7 +6,6 @@ gem 'poise-boiler'
 
 group :lint do
   gem 'cookstyle'
-  gem 'rubocop'
   gem 'foodcritic'
 end
 

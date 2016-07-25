@@ -4,6 +4,8 @@ maintainer_email '2600.ac@gmail.com'
 description 'Application cookbook which installs and configures Redis.'
 long_description 'Application cookbook which installs and configures Redis.'
 version '2.0.0'
+source_url 'https://github.com/bloomberg/redis-cookbook'
+issues_url 'https://github.com/bloomberg/redis-cookbook/issues'
 
 supports 'redhat', '>= 5.8'
 supports 'centos', '>= 5.8'
