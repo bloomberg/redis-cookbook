@@ -13,8 +13,13 @@ describe process('redis-server') do
   it { should be_running }
 end
 
+describe group('redis') do
+  it { should exist }
+end
+
 describe user('redis') do
   it { should exist }
+  it { should belong_to_primary_group 'redis' }
 end
 
 describe file('/etc/redis.conf') do

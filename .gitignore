@@ -53,4 +53,4 @@ vendor
 .kitchen.local.yml
 .vagrant
 Berksfile.lock
-Policyfile.lock.json
+*.lock.json
