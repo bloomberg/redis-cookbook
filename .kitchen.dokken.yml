@@ -11,7 +11,7 @@ provisioner:
   name: dokken
 
 verifier:
-  root_path: /tmp/verifier
+  root_path: /opt/verifier
 
 platforms:
   - name: centos-7
@@ -41,7 +41,7 @@ platforms:
       pid_one_command: /bin/systemd
       intermediate_instructions:
         - RUN /usr/bin/apt-get update -y
-        - RUN /usr/bin/apt-get install sudo -y
+        - RUN /usr/bin/apt-get install sudo net-tools -y
     attributes:
       poise-service:
         redis:
@@ -49,11 +49,15 @@ platforms:
   - name: ubuntu-14.04
     named_run_list: debian
     driver:
-      image: ubuntu:14.04
+      image: ubuntu-upstart:14.04
       pid_one_command: /sbin/init
       intermediate_instructions:
         - RUN /usr/bin/apt-get update -y
-        - RUN /usr/bin/apt-get install sudo -y
+        - RUN /usr/bin/apt-get install sudo net-tools -y
+    attributes:
+      poise-service:
+        consul:
+          provider: upstart
   - name: ubuntu-12.04
     named_run_list: debian
     driver:
@@ -61,7 +65,11 @@ platforms:
       pid_one_command: /sbin/init
       intermediate_instructions:
         - RUN /usr/bin/apt-get update -y
-        - RUN /usr/bin/apt-get install sudo -y
+        - RUN /usr/bin/apt-get install sudo net-tools -y
+    attributes:
+      poise-service:
+        consul:
+          provider: upstart
   - name: debian-8
     named_run_list: debian
     driver:
@@ -81,7 +89,11 @@ platforms:
       pid_one_command: /sbin/init
       intermediate_instructions:
         - RUN /usr/bin/apt-get update
-        - RUN /usr/bin/apt-get install lsb-release sudo -y
+        - RUN /usr/bin/apt-get install lsb-release sudo net-tools -y
+    attributes:
+      poise-service:
+        consul:
+          provider: upstart
 suites:
   - name: default
     provisioner:
