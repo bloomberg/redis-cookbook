@@ -15,7 +15,7 @@ module RedisCookbook
     # @action remove
     # @since 2.0
     class RedisInstallation < Chef::Resource
-      include Poise(inversion: true)
+      include Poise(container: true, inversion: true)
       provides(:redis_installation)
       actions(:create, :remove)
       default_action(:create)
@@ -23,7 +23,7 @@ module RedisCookbook
       # @!attribute version
       # The version of Redis to install.
       # @return [String]
-      attribute(:version, kind_of: String)
+      attribute(:version, kind_of: String, name_attribute: true)
 
       # @return [String]
       def redis_program
@@ -38,6 +38,65 @@ module RedisCookbook
       # @return [String]
       def cli_program
         @cli_program ||= provider_for_action(:cli_program).cli_program
+      end
+    end
+  end
+
+  module Provider
+    # The `redis_installation` base provider.
+    # @abstract
+    # @since 2.1
+    class RedisInstallation < Chef::Provider
+      include Poise(inversion: :redis_installation)
+
+      # Set the default inversion options.
+      # @private
+      def self.default_inversion_options(_node, new_resource)
+        super.merge(version: new_resource.version)
+      end
+
+      def action_create
+        notifying_block do
+          install_redis
+        end
+      end
+
+      def action_remove
+        notifying_block do
+          uninstall_redis
+        end
+      end
+
+      # @abstract
+      # @return [String]
+      def redis_program
+        raise NotImplementedError
+      end
+
+      # @abstract
+      # @return [String]
+      def sentinel_program
+        raise NotImplementedError
+      end
+
+      # @abstract
+      # @return [String]
+      def cli_program
+        raise NotImplementedError
+      end
+
+      private
+
+      # @abstract
+      # @return [void]
+      def install_redis
+        raise NotImplementedError
+      end
+
+      # @abstract
+      # @return [void]
+      def uninstall_redis
+        raise NotImplementedError
       end
     end
   end

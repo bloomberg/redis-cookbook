@@ -45,8 +45,9 @@ default_source :community
 cookbook 'redis', git: 'https://github.com/bloomberg/redis-cookbook'
 run_list 'redis::default'
 
-override['redis']['install']['provider'] = :archive
-override['redis']['redis']['artifact_url'] = "http://mirror.corporate.com/redis/redis-%{version}.tar.gz"
+default['redis']['provider'] = 'archive'
+default['redis']['options']['version'] = '3.2.3'
+default['redis']['options']['artifact_url'] = 'http://mirror.corporate.com/redis/redis-%{version}.tar.gz'
 ```
 
 In addition, you may find it useful to use the following Policyfile.rb
@@ -58,7 +59,7 @@ Chef Server using the `chef push production` command.
 ``` ruby
 name 'redis'
 default_source :community
-cookbook 'redis', git: 'https://github.com/bloomberg/redis-cookbook', tag: 'v2.0.0'
+cookbook 'redis', git: 'https://github.com/bloomberg/redis-cookbook'
 cookbook 'sysctl'
 cookbook 'ulimit'
 run_list 'ulimit::default', 'sysctl::params', 'redis::default'

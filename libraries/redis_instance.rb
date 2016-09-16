@@ -17,7 +17,7 @@ module RedisCookbook
     # @action restart
     # @since 1.0
     class RedisInstance < Chef::Resource
-      include Poise
+      include Poise(parent: :redis_installation, container: true)
       provides(:redis_instance)
       include PoiseService::ServiceMixin
 
@@ -25,27 +25,30 @@ module RedisCookbook
       # The user to run the Redis instance as.
       # @return [String]
       attribute(:user, kind_of: String, default: 'redis')
-      # @!attribute user
+      # @!attribute group
       # The group to run the Redis instance as.
       # @return [String]
       attribute(:group, kind_of: String, default: 'redis')
       # @!attribute directory
       # The directory to start Redis.
       # @return [String]
-      attribute(:directory, kind_of: String, default: '/var/lib/redis')
+      attribute(:directory, kind_of: String, default: lazy { "/var/lib/#{service_name}" })
+      # @!attribute logfile
+      # The log file for the Redis process.
+      # @return [String]
+      attribute(:logfile, kind_of: String, default: lazy { "/var/log/#{service_name}.log" })
       # @!attribute config_file
       # The configuration file for the Redis instance.
       # @return [String]
       attribute(:config_file, kind_of: String, default: '/etc/redis.conf')
-      # @!attribute config_file
+      # @!attribute program
       # The program path for Redis.
       # @return [String]
-      attribute(:program, kind_of: String, default: '/usr/bin/redis-server')
-
-      # @api private
-      def command
-        "#{program} #{config_file}"
-      end
+      attribute(:program, kind_of: String, default: lazy { parent.redis_program })
+      # @!attribute command
+      # The command that executes Redis.
+      # @return [String]
+      attribute(:command, kind_of: String, default: lazy { "#{program} #{config_file}" })
     end
   end
 

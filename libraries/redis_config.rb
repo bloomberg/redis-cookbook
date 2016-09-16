@@ -15,33 +15,18 @@ module RedisCookbook
     # @action delete
     # @since 2.0
     class RedisConfig < Chef::Resource
-      include Poise(fused: true)
+      include Poise(parent: :redis_instance, fused: true)
       provides(:redis_config)
 
-      # @!attribute path
-      # @return [String]
-      attribute(:path, kind_of: String, default: '/etc/redis.conf')
-      # @!attribute owner
-      # @return [String]
-      attribute(:owner, kind_of: String, default: 'redis')
-      # @!attribute group
-      # @return [String]
-      attribute(:group, kind_of: String, default: 'redis')
-      # @!attribute mode
-      # @return [String]
-      attribute(:mode, kind_of: String, default: '0640')
-
-      # @!attribute instance_name
-      # @return [String]
-      attribute(:instance_name, kind_of: String, name_attribute: true)
-      # @!attribute logfile
-      # @return [String]
-      attribute(:logfile, kind_of: String, default: lazy { "/var/log/redis/#{instance_name}.log" })
-      # @!attribute directory
-      # @return [String]
-      attribute(:directory, kind_of: String, default: lazy { "/var/lib/redis/#{instance_name}" })
+      attribute('', template: true, default_source: 'redis.conf.erb')
+      attribute(:path, kind_of: String, name_attribute: true)
+      attribute(:owner, kind_of: String, default: lazy { parent.user })
+      attribute(:group, kind_of: String, default: lazy { parent.group })
+      attribute(:mode, kind_of: String, default: '0440')
 
       # @see: https://github.com/antirez/redis/blob/3.2/redis.conf
+      attribute(:directory, kind_of: String, default: lazy { parent.directory })
+      attribute(:logfile, kind_of: String, default: lazy { parent.logfile })
       attribute(:port, kind_of: Integer, default: 6_379)
       attribute(:bind, kind_of: String, default: '0.0.0.0')
       attribute(:unixsocket, kind_of: [String, NilClass], default: nil)
@@ -89,18 +74,11 @@ module RedisCookbook
       attribute(:client_output_buffer_limit, kind_of: [String, Array], default: ['normal 0 0 0', 'slave 256mb 64mb 60', 'pubsub 32mb 8mb 60'])
 
       action(:create) do
-        directory ::File.dirname(new_resource.logfile) do
-          owner new_resource.owner
-          group new_resource.group
-          recursive true
-        end
-
-        template new_resource.path do
-          source 'redis.conf.erb'
+        file new_resource.path do
+          content new_resource.content
           owner new_resource.owner
           group new_resource.group
           mode new_resource.mode
-          variables resource: new_resource
         end
       end
 

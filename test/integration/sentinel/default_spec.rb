@@ -1,16 +1,11 @@
-require 'serverspec'
-set :backend, :exec
-
 describe service('redis-sentinel') do
   it { should be_enabled }
   it { should be_running }
 end
 
-describe process('redis-sentinel') do
-  its(:count) { should eq 1 }
-  its(:user) { should eq 'redis' }
-  its(:args) { should eq '/usr/bin/redis-sentinel *:26379' }
-  it { should be_running }
+describe processes('redis-sentinel') do
+  its('list.length') { should eq 1 }
+  its('users') { should eq %w[redis] }
 end
 
 describe group('redis') do
@@ -19,7 +14,13 @@ end
 
 describe user('redis') do
   it { should exist }
-  it { should belong_to_primary_group 'redis' }
+  its('group') { should eq 'redis' }
+end
+
+describe file('/usr/bin/redis-sentinel') do
+  it { should exist }
+  it { should be_file }
+  it { should be_executable.by_user 'redis' }
 end
 
 describe file('/etc/redis-sentinel.conf') do

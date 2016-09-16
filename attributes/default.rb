@@ -4,6 +4,7 @@
 #
 # Copyright 2015-2016, Bloomberg Finance L.P.
 #
+default['redis']['provider'] = 'auto'
 
 default['redis']['service_name'] = 'redis'
 default['redis']['service_user'] = 'redis'

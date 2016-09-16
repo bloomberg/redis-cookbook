@@ -15,33 +15,18 @@ module RedisCookbook
     # @action delete
     # @since 2.0
     class RedisSentinelConfig < Chef::Resource
-      include Poise(fused: true)
+      include Poise(parent: :redis_instance, fused: true)
       provides(:redis_sentinel_config)
 
-      # @!attribute path
-      # @return [String]
-      attribute(:path, kind_of: String, default: '/etc/redis-sentinel.conf')
-      # @!attribute owner
-      # @return [String]
-      attribute(:owner, kind_of: String, default: 'redis')
-      # @!attribute group
-      # @return [String]
-      attribute(:group, kind_of: String, default: 'redis')
-      # @!attribute mode
-      # @return [String]
-      attribute(:mode, kind_of: String, default: '0640')
-
-      # @!attribute instance_name
-      # @return [String]
-      attribute(:instance_name, kind_of: String, name_attribute: true)
-      # @!attribute logfile
-      # @return [String]
-      attribute(:logfile, kind_of: String, default: lazy { "/var/log/redis/#{instance_name}.log" })
-      # @!attribute directory
-      # @return [String]
-      attribute(:directory, kind_of: String, default: lazy { "/var/lib/redis/#{instance_name}" })
+      attribute('', template: true, default_source: 'redis.conf.erb')
+      attribute(:path, kind_of: String, name_attribute: true)
+      attribute(:owner, kind_of: String, default: lazy { parent.user })
+      attribute(:group, kind_of: String, default: lazy { parent.group })
+      attribute(:mode, kind_of: String, default: '0440')
 
       # @see: https://github.com/antirez/redis/blob/3.2/sentinel.conf
+      attribute(:directory, kind_of: String, default: lazy { parent.directory })
+      attribute(:logfile, kind_of: String, default: lazy { parent.logfile })
       attribute(:sentinel_port, kind_of: Integer, default: 26_379)
       attribute(:sentinel_master_name, kind_of: String, default: 'mymaster')
       attribute(:sentinel_monitor, kind_of: String, default: '127.0.0.1 6379 2')
@@ -53,18 +38,11 @@ module RedisCookbook
       attribute(:sentinel_client_reconfig, kind_of: [String, NilClass], default: nil)
 
       action(:create) do
-        directory ::File.dirname(new_resource.logfile) do
-          owner new_resource.owner
-          group new_resource.group
-          recursive true
-        end
-
-        template new_resource.path do
-          source 'sentinel.conf.erb'
+        file new_resource.path do
+          content new_resource.content
           owner new_resource.owner
           group new_resource.group
           mode new_resource.mode
-          variables resource: new_resource
         end
       end
 
