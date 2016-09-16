@@ -128,6 +128,7 @@ module RedisCookbook
       # @return [String]
       def self.default_archive_checksum(resource)
         case resource.version
+        when '3.2.3' then '674e9c38472e96491b7d4f7b42c38b71b5acbca945856e209cb428fbc6135f15'
         when '3.2.0' then '989f1af3dc0ac1828fdac48cd6c608f5a32a235046dddf823226f760c0fd8762'
         when '3.0.7' then 'b2a791c4ea3bb7268795c45c6321ea5abcc24457178373e6a6e3be6372737f23'
         when '2.8.24' then '6c86ca5291ca7f4e37d9c90511eed67beb6649befe57e2e26307f74adb8630fe'
