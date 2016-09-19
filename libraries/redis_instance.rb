@@ -45,10 +45,6 @@ module RedisCookbook
       # The program path for Redis.
       # @return [String]
       attribute(:program, kind_of: String, default: lazy { parent.redis_program })
-      # @!attribute command
-      # The command that executes Redis.
-      # @return [String]
-      attribute(:command, kind_of: String, default: lazy { "#{program} #{config_file}" })
     end
   end
 
@@ -75,9 +71,11 @@ module RedisCookbook
 
       # @api private
       def service_options(service)
-        service.command(new_resource.command)
-        service.directory(new_resource.directory)
-        service.user(new_resource.user)
+        config = new_resource.subresources.each.find do |r|
+          r.is_a?(RedisCookbook::Resource::RedisConfig) || r.is_a?(RedisCookbook::Resource::RedisSentinelConfig)
+        end
+
+        service.command("#{new_resource.program} #{config.path}")
       end
     end
   end
