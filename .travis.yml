@@ -20,6 +20,10 @@ env:
     - INSTANCE=sentinel-centos-6
     - INSTANCE=sentinel-ubuntu-1604
     - INSTANCE=sentinel-ubuntu-1404
+    - INSTANCE=archive-centos-7
+    - INSTANCE=archive-centos-6
+    - INSTANCE=archive-ubuntu-1604
+    - INSTANCE=archive-ubuntu-1404
 before_script:
   # https://github.com/zuazo/kitchen-in-travis-native/issues/1#issuecomment-142230889
   - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
