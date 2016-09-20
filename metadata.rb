@@ -1,9 +1,9 @@
-name 'redis'
-maintainer 'Anthony Caiafa'
-maintainer_email '2600.ac@gmail.com'
+name 'blp-redis'
+maintainer 'Bloomberg Infrastructure Engineering'
+maintainer_email 'chef@bloomberg.net'
 description 'Application cookbook which installs and configures Redis.'
 long_description 'Application cookbook which installs and configures Redis.'
-version '2.1.0'
+version '3.0.0'
 source_url 'https://github.com/bloomberg/redis-cookbook'
 issues_url 'https://github.com/bloomberg/redis-cookbook/issues'
 

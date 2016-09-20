@@ -41,12 +41,11 @@ Redis database will be built from source.
 ``` ruby
 name 'redis'
 default_source :community
-cookbook 'redis', git: 'https://github.com/bloomberg/redis-cookbook'
-run_list 'redis::default'
+run_list 'blp-redis::default'
 
-default['redis']['provider'] = 'archive'
-default['redis']['options']['version'] = '3.2.3'
-default['redis']['options']['artifact_url'] = 'http://mirror.corporate.com/redis/redis-%{version}.tar.gz'
+default['blp-redis']['provider'] = 'archive'
+default['blp-redis']['options']['version'] = '3.2.3'
+default['blp-redis']['options']['artifact_url'] = 'http://mirror.corporate.com/redis/redis-%{version}.tar.gz'
 ```
 
 In addition, you may find it useful to use the following Policyfile.rb
@@ -65,8 +64,8 @@ run_list 'ulimit::default', 'sysctl::params', 'redis::default'
 
 # @see http://shokunin.co/blog/2014/11/11/operational_redis.html
 # @see https://github.com/ziyasal/redisetup#system-side-settings
-override['redis']['config']['tcp_backlog'] = 65_535
-override['redis']['config']['maxclients'] = 10_000
+override['blp-redis']['config']['tcp_backlog'] = 65_535
+override['blp-redis']['config']['maxclients'] = 10_000
 override['ulimit']['users']['redis']['filehandle_limit'] = 65_535
 override['sysctl']['params']['vm.overcommit_memory'] = 1
 override['sysctl']['params']['vm.swappiness'] = 0

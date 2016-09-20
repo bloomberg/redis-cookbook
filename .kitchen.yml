@@ -41,7 +41,7 @@ suites:
     provisioner:
       policyfile: test/fixtures/policies/default.rb
     attributes:
-      redis:
+      blp-redis:
         provider: archive
         options:
           version: 3.2.3

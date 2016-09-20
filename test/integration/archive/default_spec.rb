@@ -1,5 +1,6 @@
 describe service('redis') do
   it { should be_enabled }
+  it { should be_installed }
   it { should be_running }
 end
 
@@ -42,14 +43,14 @@ describe file('/etc/redis.conf') do
   it { should be_grouped_into 'redis' }
 end
 
-describe file('/var/lib/redis') do
+describe file('/var/lib/redis/redis') do
   it { should exist }
   it { should be_directory }
   it { should be_owned_by 'redis' }
   it { should be_grouped_into 'redis' }
 end
 
-describe file('/var/log/redis.log') do
+describe file('/var/log/redis/redis.log') do
   it { should exist }
   it { should be_file }
   it { should be_owned_by 'redis' }
