@@ -1,5 +1,4 @@
 describe service('redis-server') do
-  it { should be_installed }
   it { should be_enabled }
   it { should be_running }
 end
@@ -60,4 +59,8 @@ end
 describe file('/opt/redis') do
   it { should exist }
   it { should be_directory }
+end
+
+describe command('/usr/local/bin/redis-cli SET foo "BAR"') do
+  its(:stdout) { should match /OK/ }
 end

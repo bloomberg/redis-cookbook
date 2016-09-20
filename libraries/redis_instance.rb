@@ -76,6 +76,8 @@ module RedisCookbook
         end
 
         service.command("#{new_resource.program} #{config.path}")
+        service.directory(new_resource.directory)
+        service.user(new_resource.user)
       end
     end
   end

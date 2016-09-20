@@ -1,5 +1,4 @@
 describe service('redis-server') do
-  it { should be_installed }
   it { should be_enabled }
   it { should be_running }
 end
@@ -37,16 +36,13 @@ describe file('/var/lib/redis') do
   it { should be_grouped_into 'redis' }
 end
 
-describe file('/var/log/redis.log') do
+describe file('/etc/redis.conf') do
   it { should exist }
   it { should be_file }
   it { should be_owned_by 'redis' }
   it { should be_grouped_into 'redis' }
 end
 
-describe file('/etc/redis.conf') do
-  it { should exist }
-  it { should be_file }
-  it { should be_owned_by 'redis' }
-  it { should be_grouped_into 'redis' }
+describe command('/usr/bin/redis-cli SET foo "BAR"') do
+  its(:stdout) { should match /OK/ }
 end

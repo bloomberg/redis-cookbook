@@ -23,20 +23,6 @@ describe file('/usr/bin/redis-sentinel') do
   it { should be_executable.by_user 'redis' }
 end
 
-describe file('/var/lib/redis-sentinel') do
-  it { should exist }
-  it { should be_directory }
-  it { should be_owned_by 'redis' }
-  it { should be_grouped_into 'redis' }
-end
-
-describe file('/var/log/redis-sentinel.log') do
-  it { should exist }
-  it { should be_file }
-  it { should be_owned_by 'redis' }
-  it { should be_grouped_into 'redis' }
-end
-
 describe file('/etc/redis-sentinel.conf') do
   it { should exist }
   it { should be_file }
