@@ -53,6 +53,18 @@ module RedisCookbook
         ::File.join(options[:prefix], new_resource.version)
       end
 
+      # @param [Chef::Resource] resource
+      # @return [String]
+      # @api private
+      def self.default_archive_checksum(resource)
+        case resource.version
+        when '3.2.3' then '674e9c38472e96491b7d4f7b42c38b71b5acbca945856e209cb428fbc6135f15'
+        when '3.0.7' then 'b2a791c4ea3bb7268795c45c6321ea5abcc24457178373e6a6e3be6372737f23'
+        when '2.8.24' then '6c86ca5291ca7f4e37d9c90511eed67beb6649befe57e2e26307f74adb8630fe'
+        when '2.6.17' then '5a65b54bb6deef2a8a4fabd7bd6962654a5d35787e68f732f471bbf117f4768e'
+        end
+      end
+
       private
 
       # @api private
@@ -107,18 +119,6 @@ module RedisCookbook
         link '/usr/local/bin/redis-cli' do
           action :delete
           to cli_program
-        end
-      end
-
-      # @param [Chef::Resource] resource
-      # @return [String]
-      # @api private
-      def self.default_archive_checksum(resource)
-        case resource.version
-        when '3.2.3' then '674e9c38472e96491b7d4f7b42c38b71b5acbca945856e209cb428fbc6135f15'
-        when '3.0.7' then 'b2a791c4ea3bb7268795c45c6321ea5abcc24457178373e6a6e3be6372737f23'
-        when '2.8.24' then '6c86ca5291ca7f4e37d9c90511eed67beb6649befe57e2e26307f74adb8630fe'
-        when '2.6.17' then '5a65b54bb6deef2a8a4fabd7bd6962654a5d35787e68f732f471bbf117f4768e'
         end
       end
     end

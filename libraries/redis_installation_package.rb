@@ -52,52 +52,6 @@ module RedisCookbook
         options.fetch(:cli_program, '/usr/bin/redis-cli')
       end
 
-      private
-
-      # @api private
-      def install_redis
-        if node.platform_family?('rhel') && !options[:no_epel]
-          if run_context.unreachable_cookbook?(:'yum-epel')
-            raise Chef::Exceptions::RecipeNotFound.new('Could not find recipe yum-epel. Please include it either on your run list or via a metadata.rb depends to install on RHEL or CentOS.')
-            include_recipe 'yum-epel::default'
-          end
-        end
-
-        system_package_name = options[:package_name]
-        system_package_version = options[:version]
-
-        init_file = file '/etc/init.d/redis-server' do
-          action :nothing
-        end
-
-        if node.platform_family?('debian')
-          dpkg_autostart 'redis-server' do
-            action :nothing
-            allow false
-          end
-        end
-
-        package system_package_name do
-          notifies :delete, init_file, :immediately
-          version system_package_version if system_package_version
-          if node.platform_family?('debian')
-            notifies :create, 'dpkg_autostart[redis-server]', :immediately
-            options '-o Dpkg::Options::=--path-exclude=/etc/redis*'
-          end
-        end
-      end
-
-      # @api private
-      def uninstall_redis
-        package options[:package_name] do
-          if node.platform_family?('debian')
-            action :purge
-          else
-            action :remove
-          end
-        end
-      end
-
       # @param [Chef::Node] node
       # @return [String]
       def self.default_package_name(node)
@@ -129,6 +83,45 @@ module RedisCookbook
           case node['platform_version'].to_i
           when 9 then '3.0.7'
           when 10 then '3.0.7'
+          end
+        end
+      end
+
+      private
+
+      # @api private
+      def install_redis
+        system_package_name = options[:package_name]
+        system_package_version = options[:version]
+
+        init_file = file '/etc/init.d/redis-server' do
+          action :nothing
+        end
+
+        if node.platform_family?('debian')
+          dpkg_autostart 'redis-server' do
+            action :nothing
+            allow false
+          end
+        end
+
+        package system_package_name do
+          notifies :delete, init_file, :immediately
+          version system_package_version if system_package_version
+          if node.platform_family?('debian')
+            notifies :create, 'dpkg_autostart[redis-server]', :immediately
+            options '-o Dpkg::Options::=--path-exclude=/etc/redis*'
+          end
+        end
+      end
+
+      # @api private
+      def uninstall_redis
+        package options[:package_name] do
+          if node.platform_family?('debian')
+            action :purge
+          else
+            action :remove
           end
         end
       end
