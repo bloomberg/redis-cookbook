@@ -26,12 +26,15 @@ module RedisCookbook
       end
 
       # @param [Chef::Node] node
-      # @param [Chef::Resource] _resource
+      # @param [Chef::Resource] new_resource
       # @api private
-      def self.default_inversion_options(node, _resource)
-        super.merge(package_name: default_package_name(node),
-                    version: default_package_version(node),
-                    no_epel: false)
+      def self.default_inversion_options(node, new_resource)
+        package_version = if new_resource.version.nil? || new_resource.version.empty?
+                            default_package_version(node)
+                          else
+                            resource.version
+                          end
+        super.merge(package_name: default_package_name(node), version: package_version)
       end
 
       # @return [String]

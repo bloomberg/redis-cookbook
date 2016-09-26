@@ -42,7 +42,7 @@ module RedisCookbook
       # @return [String]
       attribute(:program, kind_of: String, default: lazy { parent.redis_program })
 
-      attribute(:config, template: true, default_source: 'sentinel.conf.erb')
+      attribute(:config, template: true, default_source: lazy { default_config_source })
       # @!attribute config_path
       # @return [String]
       attribute(:config_path, kind_of: String, default: '/etc/redis-sentinel.conf')
@@ -60,6 +60,14 @@ module RedisCookbook
       attribute(:sentinel_failover, kind_of: Integer, default: 180_000)
       attribute(:sentinel_notification, kind_of: [String, NilClass], default: nil)
       attribute(:sentinel_client_reconfig, kind_of: [String, NilClass], default: nil)
+
+      def default_config_source
+        if parent.version
+          "#{parent.version.match(/\d\.\d/).first}/sentinel.conf.erb"
+        else
+          'sentinel.conf.erb'
+        end
+      end
     end
   end
 

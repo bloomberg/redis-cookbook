@@ -42,7 +42,7 @@ module RedisCookbook
       # @return [String]
       attribute(:program, kind_of: String, default: lazy { parent.redis_program })
 
-      attribute(:config, template: true, default_source: 'redis.conf.erb')
+      attribute(:config, template: true, default_source: lazy { default_config_source })
       # @!attribute config_path
       # @return [String]
       attribute(:config_path, kind_of: String, default: '/etc/redis.conf')
@@ -97,6 +97,13 @@ module RedisCookbook
       attribute(:activerehashing, equal_to: %w{yes no}, default: 'yes')
       attribute(:client_output_buffer_limit, kind_of: [String, Array], default: ['normal 0 0 0', 'slave 256mb 64mb 60', 'pubsub 32mb 8mb 60'])
 
+      def default_config_source
+        if matches = parent.options.fetch('version', '').match(/\d\.\d/)
+          "#{matches.first}/redis.conf.erb"
+        else
+          '3.2/redis.conf.erb'
+        end
+      end
     end
   end
 

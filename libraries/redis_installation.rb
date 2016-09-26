@@ -27,17 +27,17 @@ module RedisCookbook
 
       # @return [String]
       def redis_program
-        @program ||= provider_for_action(:redis_program).redis_program
+        provider_for_action(:redis_program).redis_program
       end
 
       # @return [String]
       def sentinel_program
-        @sentinel_program ||= provider_for_action(:sentinel_program).sentinel_program
+        provider_for_action(:sentinel_program).sentinel_program
       end
 
       # @return [String]
       def cli_program
-        @cli_program ||= provider_for_action(:cli_program).cli_program
+        provider_for_action(:cli_program).cli_program
       end
     end
   end
@@ -45,7 +45,7 @@ module RedisCookbook
   module Provider
     # The `redis_installation` base provider.
     # @abstract
-    # @since 2.1
+    # @since 3.0
     class RedisInstallation < Chef::Provider
       include Poise(inversion: :redis_installation)
 
