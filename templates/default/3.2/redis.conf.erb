@@ -17,6 +17,14 @@
 # Daemonizing is managed by poise-service
 daemonize no
 
+# By default protected mode is enabled. You should disable it only if
+# you are sure you want clients from other hosts to connect to Redis
+# even if no authentication is configured, nor a specific set of interfaces
+# are explicitly listed using the "bind" directive.
+<% if @new_resource.protected_mode %>
+protected-mode <%= @new_resource.protected_mode %>
+<% end %>
+
 # Accept connections on the specified port, default is 6379.
 # If port 0 is specified Redis will not listen on a TCP socket.
 <% if @new_resource.port  %>
@@ -27,6 +35,15 @@ port <%= @new_resource.port %>
 # specified all the interfaces will listen for incoming connections.
 <% if @new_resource.bind %>
 bind <%= @new_resource.bind %>
+<% end %>
+
+# In high requests-per-second environments you need an high backlog in order
+# to avoid slow clients connections issues. Note that the Linux kernel
+# will silently truncate it to the value of /proc/sys/net/core/somaxconn so
+# make sure to raise both the value of somaxconn and tcp_max_syn_backlog
+# in order to get the desired effect.
+<% if @new_resource.tcp_backlog %>
+tcp-backlog <%= @new_resource.tcp_backlog %>
 <% end %>
 
 # Specify the path for the unix socket that will be used to listen for
