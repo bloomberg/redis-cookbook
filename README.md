@@ -9,7 +9,7 @@ key-value database and [Redis Sentinel][2] which provides
 high-availability for the database.
 
 ## Platforms
-The following platforms are tested using [Test Kitchen][1]:
+The following platforms are tested using [Test Kitchen][5]:
 
 - Ubuntu 12.04/14.04/16.04
 - CentOS (RHEL) 5/6/7
@@ -87,3 +87,4 @@ override['sysctl']['params']['fs.file-max'] = 65_535
 [2]: http://redis.io/topics/sentinel
 [3]: https://docs.chef.io/config_rb_policyfile.html
 [4]: http://shokunin.co/blog/2014/11/11/operational_redis.html
+[5]: http://kitchen.ci/
