@@ -57,10 +57,7 @@ Chef Server using the `chef push production` command.
 ``` ruby
 name 'redis'
 default_source :community
-cookbook 'redis', git: 'https://github.com/bloomberg/redis-cookbook'
-cookbook 'sysctl'
-cookbook 'ulimit'
-run_list 'ulimit::default', 'sysctl::params', 'redis::default'
+run_list 'ulimit::default', 'sysctl::params', 'blp-redis::default'
 
 # @see http://shokunin.co/blog/2014/11/11/operational_redis.html
 # @see https://github.com/ziyasal/redisetup#system-side-settings
