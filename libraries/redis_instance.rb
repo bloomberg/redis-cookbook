@@ -17,7 +17,7 @@ module RedisCookbook
     # @action restart
     # @since 1.0
     class RedisInstance < Chef::Resource
-      include Poise(parent: :redis_installation, container: true)
+      include Poise(parent: :redis_installation)
       provides(:redis_instance)
       include PoiseService::ServiceMixin
 
@@ -100,11 +100,8 @@ module RedisCookbook
       attribute(:client_output_buffer_limit, kind_of: [String, Array], default: ['normal 0 0 0', 'slave 256mb 64mb 60', 'pubsub 32mb 8mb 60'])
 
       def default_config_source
-        if matches = parent.options.fetch('version', '').match(/\d\.\d/)
-          "#{matches.first}/redis.conf.erb"
-        else
-          '3.2/redis.conf.erb'
-        end
+        version = parent.provider_for_action(:options).options.fetch(:version, '')
+        [version.match(/\d\.\d/).to_s, 'redis.conf.erb'].compact.join('/')
       end
     end
   end
@@ -121,20 +118,9 @@ module RedisCookbook
 
       def action_enable
         notifying_block do
-          [new_resource.directory, ::File.dirname(new_resource.logfile)].each do |dirname|
-            directory dirname do
-              recursive true
-              owner new_resource.user
-              group new_resource.group
-            end
-          end
-
-          file new_resource.config_path do
-            content new_resource.config_content
-            owner new_resource.user
-            group new_resource.group
-            mode new_resource.config_mode
-          end
+          create_directory
+          create_log_directory
+          create_redis_config
         end
         super
       end
@@ -142,9 +128,54 @@ module RedisCookbook
       def action_disable
         super
         notifying_block do
-          file new_resource.config_path do
-            action :delete
-          end
+          delete_redis_config
+          delete_log_directory
+          delete_directory
+        end
+      end
+
+      private
+
+      def create_directory
+        directory new_resource.directory do
+          recursive true
+          owner new_resource.user
+          group new_resource.group
+        end
+      end
+
+      def delete_directory
+        create_directory.tap do |resource|
+          resource.action(:delete)
+        end
+      end
+
+      def create_log_directory
+        directory ::File.dirname(new_resource.logfile) do
+          recursive true
+          owner new_resource.user
+          group new_resource.group
+        end
+      end
+
+      def delete_log_directory
+        create_log_directory.tap do |resource|
+          resource.action(:delete)
+        end
+      end
+
+      def create_redis_config
+        file new_resource.config_path do
+          content new_resource.config_content
+          mode new_resource.config_mode
+          owner new_resource.user
+          group new_resource.group
+        end
+      end
+
+      def delete_redis_config
+        file new_resource.config_path do
+          action :delete
         end
       end
 

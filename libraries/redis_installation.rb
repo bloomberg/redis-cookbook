@@ -23,7 +23,7 @@ module RedisCookbook
       # @!attribute version
       # The version of Redis to install.
       # @return [String]
-      attribute(:version, kind_of: String, name_attribute: true)
+      attribute(:version, kind_of: String)
 
       # @return [String]
       def redis_program
@@ -48,12 +48,6 @@ module RedisCookbook
     # @since 3.0
     class RedisInstallation < Chef::Provider
       include Poise(inversion: :redis_installation)
-
-      # Set the default inversion options.
-      # @private
-      def self.default_inversion_options(_node, new_resource)
-        super.merge(version: new_resource.version)
-      end
 
       def action_create
         notifying_block do
