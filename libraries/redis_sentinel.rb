@@ -108,7 +108,7 @@ module RedisCookbook
         end
       end
 
-      def create_directory
+      def create_log_directory
         directory ::File.dirname(new_resource.logfile) do
           recursive true
           owner new_resource.user
