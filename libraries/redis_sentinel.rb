@@ -48,7 +48,7 @@ module RedisCookbook
       attribute(:config_path, kind_of: String, default: '/etc/redis-sentinel.conf')
       # @!attribute config_mode
       # @return [String]
-      attribute(:config_mode, kind_of: String, default: '0440')
+      attribute(:config_mode, kind_of: String, default: '0740')
 
       # @see: https://github.com/antirez/redis/blob/3.2/sentinel.conf
       attribute(:sentinel_port, kind_of: Integer, default: 26_379)
@@ -62,10 +62,10 @@ module RedisCookbook
       attribute(:sentinel_client_reconfig, kind_of: [String, NilClass], default: nil)
 
       def default_config_source
-        if parent.version
-          "#{parent.version.match(/\d\.\d/).first}/sentinel.conf.erb"
+        if matches = parent.options.fetch('version', '').match(/\d\.\d/)
+          "#{matches.first}/sentinel.conf.erb"
         else
-          'sentinel.conf.erb'
+          '3.2/sentinel.conf.erb'
         end
       end
     end
@@ -112,7 +112,7 @@ module RedisCookbook
 
       # @api private
       def service_options(service)
-        service.command("#{new_resource.program} #{new_resource.config_path}")
+        service.command("#{new_resource.program} #{new_resource.config_path} --sentinel")
         service.directory(new_resource.directory)
         service.user(new_resource.user)
       end
