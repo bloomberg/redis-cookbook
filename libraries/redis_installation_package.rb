@@ -103,7 +103,7 @@ module RedisCookbook
 
         if node.platform_family?('debian')
           dpkg_autostart 'redis-server' do
-            action :nothing
+            action :create
             allow false
           end
         end
@@ -112,7 +112,6 @@ module RedisCookbook
           notifies :delete, init_file, :immediately
           version system_package_version if system_package_version
           if node.platform_family?('debian')
-            notifies :create, 'dpkg_autostart[redis-server]', :immediately
             options '-o Dpkg::Options::=--path-exclude=/etc/redis*'
           end
         end
