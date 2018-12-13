@@ -8,6 +8,12 @@
 key-value database and [Redis Sentinel][2] which provides
 high-availability for the database.
 
+## Note
+
+This cookbook is no longer being actively maintained. Use the `redisio` cookbook instead: 
+
+https://supermarket.chef.io/cookbooks/redisio
+
 ## Platforms
 The following platforms are tested using [Test Kitchen][5]:
 
