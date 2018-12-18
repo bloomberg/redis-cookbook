@@ -2,7 +2,7 @@
 # Cookbook: blp-redis
 # License: Apache 2.0
 #
-# Copyright 2015-2016, Bloomberg Finance L.P.
+# Copyright 2015-2017, Bloomberg Finance L.P.
 #
 require 'poise_service/service_mixin'
 
@@ -17,7 +17,7 @@ module RedisCookbook
     # @action restart
     # @since 1.0
     class RedisSentinel < Chef::Resource
-      include Poise(parent: :redis_installation, container: true)
+      include Poise(parent: :redis_installation)
       provides(:redis_sentinel)
       include PoiseService::ServiceMixin
 
@@ -52,6 +52,8 @@ module RedisCookbook
 
       # @see: https://github.com/antirez/redis/blob/3.2/sentinel.conf
       attribute(:sentinel_port, kind_of: Integer, default: 26_379)
+      attribute(:sentinel_announce_ip, kind_of: String)
+      attribute(:sentinel_announce_port, kind_of: Integer)
       attribute(:sentinel_master_name, kind_of: String, default: 'mymaster')
       attribute(:sentinel_monitor, kind_of: String, default: '127.0.0.1 6379 2')
       attribute(:sentinel_auth, kind_of: String, default: 'changeme')
@@ -62,11 +64,8 @@ module RedisCookbook
       attribute(:sentinel_client_reconfig, kind_of: [String, NilClass], default: nil)
 
       def default_config_source
-        if parent.version
-          "#{parent.version.match(/\d\.\d/).first}/sentinel.conf.erb"
-        else
-          'sentinel.conf.erb'
-        end
+        version = parent.provider_for_action(:options).options.fetch(:version, '')
+        [version.match(/\d\.\d/).to_s, 'redis.conf.erb'].compact.join('/')
       end
     end
   end
@@ -83,20 +82,9 @@ module RedisCookbook
 
       def action_enable
         notifying_block do
-          [new_resource.directory, ::File.dirname(new_resource.logfile)].each do |dirname|
-            directory dirname do
-              recursive true
-              owner new_resource.user
-              group new_resource.group
-            end
-          end
-
-          file new_resource.config_path do
-            content new_resource.config_content
-            owner new_resource.user
-            group new_resource.group
-            mode new_resource.config_mode
-          end
+          create_directory
+          create_log_directory
+          create_sentinel_config
         end
         super
       end
@@ -104,9 +92,55 @@ module RedisCookbook
       def action_disable
         super
         notifying_block do
-          file new_resource.config_path do
-            action :delete
-          end
+          delete_sentinel_config
+          delete_log_directory
+          delete_directory
+        end
+      end
+
+      private
+
+      def create_directory
+        directory new_resource.directory do
+          recursive true
+          owner new_resource.user
+          group new_resource.group
+        end
+      end
+
+      def create_log_directory
+        directory ::File.dirname(new_resource.logfile) do
+          recursive true
+          owner new_resource.user
+          group new_resource.group
+        end
+      end
+
+      def delete_directory
+        create_directory.tap do |resource|
+          resource.action(:delete)
+        end
+      end
+
+      def delete_log_directory
+        create_directory.tap do |resource|
+          resource.action(:delete)
+        end
+      end
+
+      def create_sentinel_config
+        file new_resource.config_path do
+          content new_resource.config_content
+          mode new_resource.config_mode
+          owner new_resource.user
+          group new_resource.group
+          not_if { File.exist?(path) }
+        end
+      end
+
+      def delete_sentinel_config
+        file new_resource.config_path do
+          action :delete
         end
       end
 

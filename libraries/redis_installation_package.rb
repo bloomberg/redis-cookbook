@@ -2,7 +2,7 @@
 # Cookbook: blp-redis
 # License: Apache 2.0
 #
-# Copyright 2015-2016, Bloomberg Finance L.P.
+# Copyright 2015-2017, Bloomberg Finance L.P.
 #
 require 'poise'
 
@@ -17,24 +17,15 @@ module RedisCookbook
     class RedisInstallationPackage < RedisInstallation
       provides(:package)
 
-      # @param [Chef::Node] _node
-      # @param [Chef::Resource] _resource
-      # @return [TrueClass, FalseClass]
-      # @api private
       def self.provides_auto?(_node, _resource)
         true
       end
 
       # @param [Chef::Node] node
-      # @param [Chef::Resource] new_resource
+      # @param [Chef::Resource] _resource
       # @api private
-      def self.default_inversion_options(node, new_resource)
-        package_version = if new_resource.version.nil? || new_resource.version.empty?
-                            default_package_version(node)
-                          else
-                            resource.version
-                          end
-        super.merge(package_name: default_package_name(node), version: package_version)
+      def self.default_inversion_options(node, _resource)
+        super.merge(package_name: default_package_name(node), version: default_package_version(node))
       end
 
       # @return [String]

@@ -6,6 +6,17 @@
 port <%= @new_resource.sentinel_port %>
 <% end %>
 
+# sentinel announce-ip <ip>
+# sentinel announce-port <port>
+# The above two configuration directives are useful in environments where,
+# because of NAT, Sentinel is reachable from outside via a non-local address.
+<% if @resource.sentinel_announce_ip %>
+sentinel announce-ip <%= @resource.sentinel_announce_ip %>
+<% end %>
+<% if @resource.sentinel_announce_port %>
+sentinel announce-port <%= @resource.sentinel_announce_port %>
+<% end %>
+
 # dir <working-directory>
 # Every long running process should have a well-defined working directory.
 # For Redis Sentinel to chdir to /tmp at startup is the simplest thing

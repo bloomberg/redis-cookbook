@@ -2,7 +2,7 @@
 # Cookbook: redis
 # License: Apache 2.0
 #
-# Copyright 2015-2016, Bloomberg Finance L.P.
+# Copyright 2015-2017, Bloomberg Finance L.P.
 #
 require 'poise'
 
@@ -24,7 +24,7 @@ module RedisCookbook
       # @api private
       def self.default_inversion_options(_node, resource)
         super.merge(prefix: '/opt/redis',
-                    version: resource.version,
+                    version: resource.version || '3.2.3',
                     archive_url: 'http://download.redis.io/releases/redis-%{version}.tar.gz',
                     archive_checksum: default_archive_checksum(resource))
       end
@@ -50,7 +50,7 @@ module RedisCookbook
       # @return [String]
       # @api private
       def static_folder
-        ::File.join(options[:prefix], new_resource.version)
+        ::File.join(options[:prefix], options[:version])
       end
 
       # @param [Chef::Resource] resource

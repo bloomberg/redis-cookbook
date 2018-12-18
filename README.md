@@ -17,8 +17,8 @@ https://supermarket.chef.io/cookbooks/redisio
 ## Platforms
 The following platforms are tested using [Test Kitchen][5]:
 
-- Ubuntu 12.04/14.04/16.04
-- CentOS (RHEL) 5/6/7
+- Ubuntu 14.04/16.04
+- CentOS (RHEL) 6/7
 
 ## Basic Usage
 The [default recipe](recipes/default.rb) installs and configures the
