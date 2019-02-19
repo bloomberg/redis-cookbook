@@ -3,6 +3,7 @@ driver:
   name: vagrant
 provisioner:
   name: chef_zero
+  require_chef_omnibus: 12.20.3
 verifier:
   name: inspec
 platforms:

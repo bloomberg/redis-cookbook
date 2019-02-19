@@ -11,8 +11,8 @@ end
 
 redis_installation node['blp-redis']['sentinel']['service_name'] { version '' }
 
-redis_sentinel node['redis']['sentinel']['service_name'] do
-  owner node['blp-redis']['service_owner']
+redis_sentinel node['blp-redis']['sentinel']['service_name'] do
+  user node['blp-redis']['service_user']
   group node['blp-redis']['service_group']
   node['blp-redis']['sentinel']['config'].each_pair { |k, v| send(k, v) }
 end
